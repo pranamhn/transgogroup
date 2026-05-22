@@ -3,7 +3,7 @@ import type { Route } from "../data";
 
 export function normalizeRoute(p: string): Route {
   const c = p.replace(/\/$/, "") || "/";
-  const rs: Route[] = ["/", "/about", "/services", "/fleet", "/workshop", "/investor", "/contact"];
+  const rs: Route[] = ["/", "/about", "/2w-fleet-operator", "/4w-fleet-operator", "/workshop", "/platform", "/investor-partners", "/visi-2030", "/contact"];
   return rs.includes(c as Route) ? (c as Route) : "/";
 }
 

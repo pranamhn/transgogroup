@@ -9,7 +9,7 @@ export function FadeSection({ children, className = "", id }: { children: ReactN
     const el = ref.current;
     if (!el) return;
     el.style.opacity = "0";
-    el.style.transform = "translateY(28px)";
+    //el.style.transform = "translateY(28px)";
     const obs = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -95,7 +95,7 @@ export function CtaBand({ title, sub }: { title: string; sub: string }) {
       </div>
       <div className="cta-band-actions">
         <InternalLink href="/contact" className="btn-primary">Hubungi Kami</InternalLink>
-        <InternalLink href="/investor" className="btn-outline">Investor Page →</InternalLink>
+        <InternalLink href="/investor-partners" className="btn-outline">Investor & Partners →</InternalLink>
       </div>
     </div>
   );

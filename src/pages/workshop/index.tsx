@@ -1,6 +1,6 @@
 import { BatteryCharging, ChartNoAxesCombined, CircleGauge, Fan, House, Wrench } from "lucide-react";
 import { workshopCaps } from "../../data";
-import { FadeSection, PageHero, SectionLabel, CtaBand } from "../../components/ui";
+import { FadeSection, PageHero, SectionLabel } from "../../components/ui";
 
 export default function WorkshopPage() {
   return (
@@ -12,7 +12,7 @@ export default function WorkshopPage() {
       />
 
       {/* ── Workshop hero card ────────────────────────────────────────────── */}
-      <FadeSection className="section">
+      <FadeSection className="section workshop-overview-section">
         <div className="workshop-hero">
           <div className="workshop-hero-text">
             <SectionLabel>Maintenance Layer</SectionLabel>
@@ -41,7 +41,7 @@ export default function WorkshopPage() {
       </FadeSection>
 
       {/* ── Capabilities ──────────────────────────────────────────────────── */}
-      <FadeSection className="section section--alt">
+      <FadeSection className="section section--alt workshop-caps-section">
         <div className="section-head">
           <SectionLabel>Kemampuan Bengkel</SectionLabel>
           <h2>Dari perawatan rutin hingga data operasional.</h2>
@@ -58,7 +58,7 @@ export default function WorkshopPage() {
       </FadeSection>
 
       {/* ── Service coverage ──────────────────────────────────────────────── */}
-      <FadeSection className="section">
+      <FadeSection className="section workshop-services-section">
         <div className="section-head">
           <SectionLabel>Layanan Tersedia</SectionLabel>
           <h2>Bengkel lengkap untuk semua kebutuhan armada.</h2>
@@ -81,12 +81,6 @@ export default function WorkshopPage() {
         </div>
       </FadeSection>
 
-      <FadeSection className="section section-cta">
-        <CtaBand
-          title="Butuh layanan bengkel untuk armada Anda?"
-          sub="Hubungi tim Transgo Garage untuk konsultasi dan jadwal servis."
-        />
-      </FadeSection>
     </>
   );
 }

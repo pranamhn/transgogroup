@@ -3,20 +3,24 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import HomePage     from "./pages/home";
 import AboutPage    from "./pages/about";
-import ServicesPage from "./pages/services";
+import TwoWFleetOperatorPage from "./pages/services";
 import FleetPage    from "./pages/fleet";
 import WorkshopPage from "./pages/workshop";
+import PlatformPage from "./pages/platform";
 import InvestorPage from "./pages/investor";
+import Vision2030Page from "./pages/visi-2030";
 import ContactPage  from "./pages/contact";
 import type { Route } from "./data";
 
 function renderRoute(route: Route) {
   switch (route) {
     case "/about":    return <AboutPage />;
-    case "/services": return <ServicesPage />;
-    case "/fleet":    return <FleetPage />;
+    case "/2w-fleet-operator": return <TwoWFleetOperatorPage />;
+    case "/4w-fleet-operator": return <FleetPage />;
     case "/workshop": return <WorkshopPage />;
-    case "/investor": return <InvestorPage />;
+    case "/platform": return <PlatformPage />;
+    case "/investor-partners": return <InvestorPage />;
+    case "/visi-2030": return <Vision2030Page />;
     case "/contact":  return <ContactPage />;
     default:          return <HomePage />;
   }

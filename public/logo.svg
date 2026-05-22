@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 44" role="img" aria-label="Transgo">
+  <rect width="44" height="44" rx="10" fill="#2B44CC"/>
+  <path d="M8,10 L20,22 L8,34" fill="none" stroke="white" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M24,10 L36,22 L24,34" fill="none" stroke="white" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

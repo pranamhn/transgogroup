@@ -18,9 +18,9 @@ export default function ContactPage() {
           <div className="contact-info-items">
             {[
               { label: "Alamat",          value: "Jl. Gatot Subroto No.18-20, Setiabudi, Jakarta Selatan 12930" },
-              { label: "WhatsApp",        value: "+62-811-8118-894" },
               { label: "Jam Operasional", value: "08.00 – 21.00 WIB (Setiap Hari)" },
-              { label: "Instagram",       value: "@transgo.id" },
+              { label: "Instagram",       value: "@transgogroup" },
+              { label: "LinkedIn",        value: "Transgo Group" },
             ].map((c) => (
               <div key={c.label} className="contact-info-row">
                 <span>{c.label}</span>
@@ -29,11 +29,11 @@ export default function ContactPage() {
             ))}
           </div>
           <div className="contact-action-btns">
-            <a href="https://wa.me/6281181188894" target="_blank" rel="noreferrer" className="btn-primary btn-lg">
-              Chat WhatsApp
+            <a href="https://www.instagram.com/transgogroup" target="_blank" rel="noreferrer" className="btn-primary btn-lg">
+              Instagram @transgogroup
             </a>
-            <a href="https://www.instagram.com/transgo.id" target="_blank" rel="noreferrer" className="btn-outline btn-lg">
-              @transgo.id →
+            <a href="https://www.linkedin.com/company/transgo-group" target="_blank" rel="noreferrer" className="btn-outline btn-lg">
+              LinkedIn Transgo Group →
             </a>
           </div>
 

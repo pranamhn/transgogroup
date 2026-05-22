@@ -9,13 +9,13 @@ export default function InvestorPage() {
   return (
     <>
       <PageHero
-        kicker="Investor Relations"
-        title="Rp 400M mobility rental ecosystem dengan digital app dan EV expansion upside."
+        kicker="Investor & Partners"
+        title="Rp 129M mobility rental ecosystem dengan digital app dan EV expansion upside."
         copy="Transgo diposisikan sebagai holding rental modern: 861 kendaraan aktif, 524 motor EV, 337 mobil ICE, Rp129B assets under managed, aplikasi 10K+ downloads, dan workshop-backed margin control."
       />
 
       {/* ── Metric wall ───────────────────────────────────────────────────── */}
-      <FadeSection className="section section--alt">
+      <FadeSection className="section section--alt investor-metrics-section">
         <div className="metric-wall">
           {investorMetrics.map((m) => (
             <article key={m.label} className="metric-card metric-card--blue">
@@ -28,7 +28,7 @@ export default function InvestorPage() {
       </FadeSection>
 
       {/* ── Investor thesis ───────────────────────────────────────────────── */}
-      <FadeSection className="section">
+      <FadeSection className="section investor-thesis-section">
         <div className="section-head">
           <SectionLabel>Investor Thesis</SectionLabel>
           <h2>Bisnis mobilitas yang bisa dibiayai, diukur, dan diskalakan.</h2>
@@ -54,7 +54,7 @@ export default function InvestorPage() {
       </FadeSection>
 
       {/* ── EV Investment Program ─────────────────────────────────────────── */}
-      <FadeSection className="section section--blue-tint" id="ev-investment">
+      <FadeSection className="section section--blue-tint investor-ev-section" id="ev-investment">
         <div className="section-head">
           <SectionLabel>Program Investasi EV</SectionLabel>
           <h2>Investasi Armada Motor Listrik — Pasif, Terkelola, Berhasil.</h2>
@@ -141,7 +141,7 @@ export default function InvestorPage() {
       </FadeSection>
 
       {/* ── Roadmap ───────────────────────────────────────────────────────── */}
-      <FadeSection className="section">
+      <FadeSection className="section investor-roadmap-section">
         <div className="section-head">
           <SectionLabel>Growth Roadmap</SectionLabel>
           <h2>Rencana ekspansi yang terstruktur.</h2>
@@ -154,25 +154,6 @@ export default function InvestorPage() {
               <h3>{r.title}</h3>
               <p>{r.description}</p>
             </article>
-          ))}
-        </div>
-      </FadeSection>
-
-      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
-      <FadeSection className="section section--alt">
-        <div className="section-head">
-          <SectionLabel>FAQ</SectionLabel>
-          <h2>Pertanyaan umum dari investor dan mitra.</h2>
-        </div>
-        <div className="faq-list">
-          {faqs.map((f, i) => (
-            <div key={f.question} className={`faq-item${openFaq === i ? " faq-item--open" : ""}`}>
-              <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
-                {f.question}
-                <span className="faq-icon">{openFaq === i ? "−" : "+"}</span>
-              </button>
-              {openFaq === i && <p className="faq-a">{f.answer}</p>}
-            </div>
           ))}
         </div>
       </FadeSection>
@@ -195,6 +176,26 @@ export default function InvestorPage() {
           </div>
         </div>
       </FadeSection>
+
+      {/* ── FAQ ───────────────────────────────────────────────────────────── */}
+      <FadeSection className="section section--alt investor-faq-section">
+        <div className="section-head">
+          <SectionLabel>FAQ</SectionLabel>
+          <h2>Pertanyaan umum dari investor dan mitra.</h2>
+        </div>
+        <div className="faq-list">
+          {faqs.map((f, i) => (
+            <div key={f.question} className={`faq-item${openFaq === i ? " faq-item--open" : ""}`}>
+              <button className="faq-q" onClick={() => setOpenFaq(openFaq === i ? null : i)}>
+                {f.question}
+                <span className="faq-icon">{openFaq === i ? "−" : "+"}</span>
+              </button>
+              {openFaq === i && <p className="faq-a">{f.answer}</p>}
+            </div>
+          ))}
+        </div>
+      </FadeSection>
+
     </>
   );
 }

@@ -1,4 +1,4 @@
-export type Route = "/" | "/about" | "/services" | "/fleet" | "/workshop" | "/investor" | "/contact";
+export type Route = "/" | "/about" | "/2w-fleet-operator" | "/4w-fleet-operator" | "/workshop" | "/platform" | "/investor-partners" | "/visi-2030" | "/contact";
 export type NavItem       = { label: string; href: Route };
 export type VehiclePrice  = { name: string; type: string; originalPrice: number; offerPrice: number };
 export type CashbackItem  = { title: string; detail: string };
@@ -30,10 +30,10 @@ export const BRAND = {
 export const navigation: NavItem[] = [
   { label: "Home",     href: "/"         },
   { label: "About",    href: "/about"    },
-  { label: "Services", href: "/services" },
-  { label: "Fleet",    href: "/fleet"    },
-  { label: "Workshop", href: "/workshop" },
-  { label: "Investor", href: "/investor" },
+  { label: "Services", href: "/2w-fleet-operator" },
+  { label: "Investor & Partners", href: "/investor-partners" },
+  { label: "Platform", href: "/platform" },
+  { label: "Visi 2030", href: "/visi-2030" },
 ];
 
 // ─── Sub-brands marquee ───────────────────────────────────────────────────────
@@ -57,35 +57,41 @@ export const businessModels = [
   {
     code: "TMR",
     full: "Transgo Mobility Rental",
-    desc: "Unit mobil untuk driver ride-hailing dan operator kecil — kontrak fleksibel, dokumentasi rapi, dukungan servis penuh.",
+    desc: "Unit mobil siap jalan untuk driver ride-hailing dan mitra fleet — kontrak transparan, perawatan terjamin, dukungan dari hari pertama.",
     meta: "337 Mobil ICE",
+    stat: "337",
+    unit: "Mobil ICE Aktif",
     color: BRAND.blue,
   },
   {
     code: "EMR",
     full: "Evride Mobility Rental",
-    desc: "Motor listrik untuk driver ojek online dan kurir — biaya energi lebih efisien dengan armada EV masa depan.",
+    desc: "Motor listrik untuk driver ojek online dan kurir — biaya operasional lebih rendah, armada EV masa depan yang sudah berjalan hari ini.",
     meta: "524 Motor EV",
-    color: "#2196F3",
+    stat: "524",
+    unit: "Motor EV Aktif",
+    color: "#4A9EFF",
   },
   {
     code: "TGS",
     full: "Transgo Garage Service",
-    desc: "Perawatan preventif, perbaikan cepat, quality control, dan data log kondisi unit untuk utilisasi armada optimal.",
+    desc: "Workshop internal untuk armada aktif — servis berkala, perbaikan cepat, dan data kondisi unit yang menjaga utilisasi tidak pernah berhenti.",
     meta: "Fleet Uptime",
-    color: "#D97706",
+    stat: "24/7",
+    unit: "Fleet Operations",
+    color: "#F59E0B",
   },
 ];
 
 // ─── Car prices ───────────────────────────────────────────────────────────────
 export const carPrices: VehiclePrice[] = [
-  { name: "Daihatsu Sigra D 2025",  type: "MT",     originalPrice: 300000, offerPrice: 170000 },
-  { name: "Calya / Sigra 2022",     type: "MT",     originalPrice: 325000, offerPrice: 180000 },
-  { name: "Calya / Sigra 2025",     type: "MT",     originalPrice: 325000, offerPrice: 190000 },
-  { name: "Calya / Sigra 2025",     type: "AT",     originalPrice: 325000, offerPrice: 200000 },
-  { name: "Toyota Avanza E 2025",   type: "AT",     originalPrice: 325000, offerPrice: 210000 },
-  { name: "Suzuki XL7 Hybrid 2024", type: "Hybrid", originalPrice: 300000, offerPrice: 220000 },
-  { name: "Toyota Avanza G 2024",   type: "Manual", originalPrice: 330000, offerPrice: 220000 },
+  { name: "Daihatsu Sigra D 2025",  type: "MT",     originalPrice: 300000, offerPrice: 175000 },
+  { name: "Calya / Sigra 2022",     type: "MT",     originalPrice: 325000, offerPrice: 185000 },
+  { name: "Calya / Sigra 2025",     type: "MT",     originalPrice: 325000, offerPrice: 195000 },
+  { name: "Calya / Sigra 2025",     type: "AT",     originalPrice: 325000, offerPrice: 205000 },
+  { name: "Toyota Avanza E 2025",   type: "AT",     originalPrice: 325000, offerPrice: 215000 },
+  { name: "Suzuki XL7 Hybrid 2024", type: "Hybrid", originalPrice: 300000, offerPrice: 240000 },
+  { name: "Toyota Avanza G 2024",   type: "Manual", originalPrice: 330000, offerPrice: 225000 },
 ];
 
 export const electricBikes = ["Polytron Fox R", "Alva N3", "Maka Motors"];
@@ -117,13 +123,13 @@ export const serviceLines: ServiceLine[] = [
     title: "Sewa Mobil Driver Online",
     audience: "Driver car-hailing & mitra fleet",
     description: "Rental mobil untuk driver transportasi online dengan sistem pemesanan yang efisien dan mudah diakses 24 jam.",
-    features: ["Mulai Rp170.000/hari", "Tanpa DP & survey", "Pilihan city car hingga SUV", "Pembayaran digital"],
+    features: ["Mulai Rp175.000/hari", "Tanpa DP & survey", "Pilihan city car hingga SUV", "Pembayaran digital"],
   },
   {
     title: "Sewa Motor Listrik EV",
     audience: "Driver ojol, kurir & mobilitas",
     description: "Motor listrik ramah lingkungan dengan harga spesial untuk driver yang mengejar biaya operasional lebih rendah.",
-    features: ["Mulai Rp40.000/hari", "EV onboarding support", "Servis berkala gratis", "Driver support 24 jam"],
+    features: ["Mulai Rp60.000/hari", "EV onboarding support", "Servis berkala gratis", "Driver support 24 jam"],
   },
   {
     title: "Program Kepemilikan Motor",

@@ -1,14 +1,21 @@
 import { useState } from "react";
-import { Menu, X, CarFront } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import type { Route } from "../data";
 import { navigation } from "../data";
 import { useScrolled, go } from "../hooks";
 
+const SERVICE_LINKS: { label: string; sub: string; href: Route }[] = [
+  { label: "2W Fleet Operator", sub: "Motor EV untuk ojol & kurir", href: "/2w-fleet-operator" },
+  { label: "4W Fleet Operator", sub: "Mobil untuk driver online", href: "/4w-fleet-operator" },
+  { label: "Workshop",      sub: "Servis & perawatan fleet",      href: "/workshop"  },
+];
+
 export default function Header({ route }: { route: Route }) {
   const scrolled = useScrolled();
   const [open, setOpen] = useState(false);
+  const [svcOpen, setSvcOpen] = useState(false);
 
-  const nav = (href: Route) => { go(href); setOpen(false); };
+  const nav = (href: Route) => { go(href); setOpen(false); setSvcOpen(false); };
 
   return (
     <>
@@ -16,24 +23,50 @@ export default function Header({ route }: { route: Route }) {
         <div className="header-inner">
           {/* Logo */}
           <a href="/" onClick={(e) => { e.preventDefault(); nav("/"); }} className="brand">
-            <span className="brand-mark">
-              <CarFront size={20} strokeWidth={2.4} />
-            </span>
-            <span className="brand-text">
-              <strong>TRANSGO</strong>
-              <small>Group Mobility</small>
-            </span>
+            <img src="/logo.svg" height={36} alt="" className="brand-logo" />
+            <span className="brand-name">TRANSGO</span>
           </a>
 
           {/* Desktop nav */}
           <nav className="desktop-nav" aria-label="Main navigation">
-            {navigation.map((n) => (
-              <a key={n.href} href={n.href}
-                onClick={(e) => { e.preventDefault(); nav(n.href); }}
-                className={`nav-link${route === n.href ? " nav-link--active" : ""}`}>
-                {n.label}
-              </a>
-            ))}
+            {navigation.map((n) =>
+              n.href === "/2w-fleet-operator" ? (
+                <div
+                  key={n.href}
+                  className="nav-dropdown-wrap"
+                  onMouseEnter={() => setSvcOpen(true)}
+                  onMouseLeave={() => setSvcOpen(false)}
+                >
+                  <a
+                    href={n.href}
+                    onClick={(e) => { e.preventDefault(); nav(n.href); }}
+                    className={`nav-link nav-link--has-dropdown${route === n.href ? " nav-link--active" : ""}`}
+                  >
+                    {n.label}
+                    <ChevronDown size={13} className={`nav-chevron${svcOpen ? " nav-chevron--open" : ""}`} />
+                  </a>
+                  <div className={`nav-dropdown${svcOpen ? " nav-dropdown--open" : ""}`}>
+                    {SERVICE_LINKS.map((s) => (
+                      <a
+                        key={s.href}
+                        href={s.href}
+                        onClick={(e) => { e.preventDefault(); nav(s.href); }}
+                        className={`dropdown-item${route === s.href ? " dropdown-item--active" : ""}`}
+                      >
+                        <span className="dropdown-item-label">{s.label}</span>
+                        <span className="dropdown-item-sub">{s.sub}</span>
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <a key={n.href} href={n.href}
+                  onClick={(e) => { e.preventDefault(); nav(n.href); }}
+                  className={`nav-link${route === n.href ? " nav-link--active" : ""}`}>
+                  {n.label}
+                </a>
+              )
+            )}
           </nav>
 
           {/* Right */}
@@ -41,7 +74,7 @@ export default function Header({ route }: { route: Route }) {
             <a href="/contact"
               onClick={(e) => { e.preventDefault(); nav("/contact"); }}
               className="btn-primary header-cta">
-              Hubungi Kami
+              Hubungi
             </a>
             <button
               className="hamburger"
@@ -58,13 +91,7 @@ export default function Header({ route }: { route: Route }) {
       {open && (
         <div className="mobile-nav" role="dialog" aria-label="Mobile navigation">
           <div className="mobile-nav-brand">
-            <span className="brand-mark">
-              <CarFront size={18} strokeWidth={2.4} />
-            </span>
-            <span className="brand-text">
-              <strong>TRANSGO</strong>
-              <small>Group Mobility</small>
-            </span>
+            <img src="/logo.svg" height={28} alt="Transgo Group Mobility" className="brand-logo" />
           </div>
           {navigation.map((n) => (
             <a key={n.href} href={n.href}
@@ -77,11 +104,11 @@ export default function Header({ route }: { route: Route }) {
           <a href="/contact"
             className="mobile-nav-cta"
             onClick={(e) => { e.preventDefault(); nav("/contact"); }}>
-            Hubungi Kami
+            Hubungi
           </a>
           <div className="mobile-nav-info">
-            <span>+62-811-8118-894</span>
-            <span>@transgo.id</span>
+            <span>@transgogroup</span>
+            <span>LinkedIn: Transgo Group</span>
           </div>
         </div>
       )}
