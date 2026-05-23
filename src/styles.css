@@ -275,7 +275,7 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .brand-logo { height: 34px; width: auto; flex-shrink: 0; }
 .brand-name {
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
-  font-size: 1.25rem;
+  font-size: 1.4rem;
   font-weight: 800;
   letter-spacing: 0em;
   text-transform: uppercase;
@@ -765,6 +765,27 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
   line-height: 1;
 }
 .biz-card-body { flex: 1; }
+
+.biz-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  margin: 2px 0 10px;
+}
+.biz-stat-num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--biz-color, var(--blue));
+}
+.biz-stat-unit {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding-bottom: 2px;
+}
+
 .biz-title {
   font-size: 0.92rem;
   font-weight: 760;
@@ -5626,10 +5647,13 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
   .header-cta { display: none; }
   .header-inner { padding: 0 20px; gap: 16px; }
 
-  .hero-h1 { font-size: clamp(2.1rem, 8vw, 3rem); }
-  .hero-stats { flex-wrap: wrap; max-width: 100%; gap: 24px 0; }
-  .hero-stat { min-width: 120px; padding-right: 24px; margin-right: 24px; }
-  .hero-content { padding: calc(var(--header-h) + 48px) 20px 72px; }
+  .hero-h1 { font-size: clamp(2.1rem, 8vw, 3rem); line-height: 1.05; }
+  .hero-sub { font-size: 0.93rem; margin-bottom: 28px; }
+  .hero-actions { margin-bottom: 40px; gap: 10px; }
+  .hero-stats { flex-wrap: wrap; max-width: 100%; gap: 20px 0; }
+  .hero-stat { min-width: 110px; padding-right: 24px; margin-right: 24px; }
+  .hero-content { padding: calc(var(--header-h) + 40px) 20px 56px; }
+  .biz-grid { gap: 10px; }
 
   .biz-section { padding: 52px 20px 56px; }
   .biz-section-head { margin-bottom: 24px; }
@@ -5753,8 +5777,17 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 }
 
 @media (max-width: 480px) {
-  .hero-actions { flex-direction: column; }
-  .hero-actions a { width: 100%; text-align: center; justify-content: center; }
+  .hero-content { padding: calc(var(--header-h) + 24px) 18px 40px; }
+  .hero-h1 { font-size: clamp(1.85rem, 8.5vw, 2.3rem); margin-bottom: 16px; }
+  .hero-sub { font-size: 0.88rem; margin-bottom: 20px; }
+  .hero-actions { flex-direction: column; gap: 8px; margin-bottom: 28px; }
+  .hero-actions a,
+  .hero-actions button { width: 100%; text-align: center; justify-content: center; }
+  .biz-section { padding: 44px 16px 48px; }
+  .biz-card { padding: 16px; }
+  .biz-stat-num { font-size: 1.55rem; }
+  .milestone-card { width: 188px; min-height: 170px; }
+  .partner-section { padding: 44px 16px 48px; }
   .investor-blue-metrics { grid-template-columns: 1fr; }
   .investor-blue-actions span { max-width: none; }
   .roadmap-track { grid-template-columns: 1fr; }
