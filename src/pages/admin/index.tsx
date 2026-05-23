@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { BarChart3, Car, Cloud, Download, Gauge, Home, Info, Save, Target, Upload, Wallet } from "lucide-react";
+import { BarChart3, Car, Cloud, Download, FileText, Gauge, Home, Info, Save, Target, Trash2, Upload, Wallet } from "lucide-react";
 import { defaultSiteMetrics, type SiteMetrics, useSiteMetrics } from "../../siteMetrics";
 import { type VehicleCatalogItem, useVehicleCatalog } from "../../vehicleCatalog";
+import { useCompro } from "../../comproPdf";
 
 type AdminSection = "home" | "about" | "fleet" | "investor" | "vision" | "api";
 
@@ -117,6 +118,8 @@ const metricGroups: { section: AdminSection; title: string; desc: string; fields
 export default function AdminPage() {
   const { metrics, setMetrics } = useSiteMetrics();
   const { vehicles, setVehicles } = useVehicleCatalog();
+  const { pdfData, setPdf, clearPdf } = useCompro();
+  const pdfInputRef = useRef<HTMLInputElement>(null);
   const [activeSection, setActiveSection] = useState<AdminSection>("home");
   const [draft, setDraft] = useState(metrics);
   const [vehicleDraft, setVehicleDraft] = useState(vehicles);
@@ -143,6 +146,21 @@ export default function AdminPage() {
     const payload = JSON.stringify({ metrics: draft, vehicles: vehicleDraft }, null, 2);
     await navigator.clipboard.writeText(payload);
     setMessage("JSON metrics sudah disalin ke clipboard.");
+  };
+
+  const handlePdfUpload = (file?: File) => {
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+      setMessage("PDF terlalu besar (maks. 10MB). Gunakan file yang lebih kecil.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      setPdf({ dataUrl, filename: file.name });
+      setMessage(`Company Profile "${file.name}" berhasil diupload.`);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = () => {
@@ -279,6 +297,51 @@ export default function AdminPage() {
               </div>
             </article>
           ))}
+          {activeSection === "home" && (
+            <article className="admin-panel">
+              <div className="admin-panel-head">
+                <div>
+                  <h2>Company Profile PDF</h2>
+                  <p>PDF yang diupload akan muncul sebagai popup fullscreen saat tombol "View Compro" diklik di halaman utama.</p>
+                </div>
+                <FileText size={18} />
+              </div>
+              <div className="compro-upload-area">
+                {pdfData ? (
+                  <div className="compro-upload-active">
+                    <div className="compro-upload-info">
+                      <FileText size={20} />
+                      <div>
+                        <strong>{pdfData.filename}</strong>
+                        <span>PDF aktif — tombol "View Compro" akan membuka file ini</span>
+                      </div>
+                    </div>
+                    <div className="compro-upload-btns">
+                      <button type="button" className="compro-replace-btn" onClick={() => pdfInputRef.current?.click()}>
+                        <Upload size={14} /> Ganti PDF
+                      </button>
+                      <button type="button" className="compro-delete-btn" onClick={() => { clearPdf(); setMessage("Company Profile dihapus."); }}>
+                        <Trash2 size={14} /> Hapus
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="compro-upload-empty" onClick={() => pdfInputRef.current?.click()}>
+                    <Upload size={28} />
+                    <strong>Upload Company Profile PDF</strong>
+                    <span>Klik untuk pilih file · Maks. 10MB</span>
+                  </div>
+                )}
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  className="admin-hidden-file"
+                  onChange={(e) => handlePdfUpload(e.target.files?.[0])}
+                />
+              </div>
+            </article>
+          )}
           {activeSection === "fleet" && (
             <VehicleEditor vehicles={vehicleDraft} onChange={setVehicleDraft} />
           )}

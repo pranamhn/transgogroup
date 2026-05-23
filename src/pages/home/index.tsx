@@ -1,16 +1,19 @@
 import { useEffect, useRef } from "react";
+import { FileText } from "lucide-react";
 import { go } from "../../hooks";
 import { FadeSection, Badge, SectionLabel } from "../../components/ui";
 import MarqueeTicker from "../../components/MarqueeTicker";
 import PricingSection from "../../components/PricingSection";
 import { useLang } from "../../i18n";
 import { buildMetricSnapshot, useSiteMetrics } from "../../siteMetrics";
+import { useCompro } from "../../comproPdf";
 
 export default function HomePage() {
   const heroRef = useRef<HTMLElement>(null);
   const { t } = useLang();
   const { metrics } = useSiteMetrics();
   const metricSnapshot = buildMetricSnapshot(metrics);
+  const { pdfData, openModal } = useCompro();
 
   useEffect(() => {
     const el = heroRef.current;
@@ -43,9 +46,16 @@ export default function HomePage() {
           </h1>
           <p className="hero-sub">{t.home.heroSub}</p>
           <div className="hero-actions">
-            <a href="/4w-fleet-operator" onClick={(e) => { e.preventDefault(); go("/4w-fleet-operator"); }} className="btn-primary btn-lg">
-              {t.home.heroBtnFleet}
-            </a>
+            {pdfData ? (
+              <button type="button" className="btn-primary btn-lg" onClick={openModal}>
+                <FileText size={16} />
+                {t.home.heroBtnFleet}
+              </button>
+            ) : (
+              <a href="/4w-fleet-operator" onClick={(e) => { e.preventDefault(); go("/4w-fleet-operator"); }} className="btn-primary btn-lg">
+                {t.home.heroBtnFleet}
+              </a>
+            )}
             <a href="/investor-partners" onClick={(e) => { e.preventDefault(); go("/investor-partners"); }} className="btn-outline btn-lg">
               {t.home.heroBtnInvestor}
             </a>

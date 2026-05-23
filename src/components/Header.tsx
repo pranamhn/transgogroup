@@ -5,7 +5,7 @@ import { navigation } from "../data";
 import { useScrolled, go } from "../hooks";
 import { useLang } from "../i18n";
 
-const SERVICE_HREFS: Route[] = ["/2w-fleet-operator", "/4w-fleet-operator", "/workshop"];
+const SERVICE_HREFS: Route[] = ["/2w-fleet-operator", "/4w-fleet-operator", "/workshop", "/gps-service"];
 
 export default function Header({ route }: { route: Route }) {
   const scrolled = useScrolled();
@@ -16,9 +16,10 @@ export default function Header({ route }: { route: Route }) {
   const nav = (href: Route) => { go(href); setOpen(false); setSvcOpen(false); };
 
   const serviceLinks = [
-    { label: "2W Fleet Operator", sub: t.nav.twoWSub,  href: "/2w-fleet-operator" as Route },
-    { label: "4W Fleet Operator", sub: t.nav.fourWSub, href: "/4w-fleet-operator" as Route },
+    { label: "2W Fleet Operator", sub: t.nav.twoWSub,     href: "/2w-fleet-operator" as Route },
+    { label: "4W Fleet Operator", sub: t.nav.fourWSub,    href: "/4w-fleet-operator" as Route },
     { label: "Workshop",          sub: t.nav.workshopSub, href: "/workshop" as Route },
+    { label: "GPS Service",       sub: t.nav.gpsSub,      href: "/gps-service" as Route },
   ];
 
   const navLabel = (href: Route, label: string) =>

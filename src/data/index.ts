@@ -1,4 +1,4 @@
-export type Route = "/" | "/about" | "/2w-fleet-operator" | "/4w-fleet-operator" | "/workshop" | "/platform" | "/investor-partners" | "/visi-2030" | "/contact" | "/admin/dashboard";
+export type Route = "/" | "/about" | "/2w-fleet-operator" | "/4w-fleet-operator" | "/workshop" | "/gps-service" | "/platform" | "/investor-partners" | "/visi-2030" | "/contact" | "/admin/dashboard";
 export type NavItem       = { label: string; href: Route };
 export type VehiclePrice  = { name: string; type: string; originalPrice: number; offerPrice: number };
 export type CashbackItem  = { title: string; detail: string };
@@ -174,31 +174,31 @@ export const evPackages: EvPackage[] = [
   {
     name: "Starter",
     units: 5,
-    pricePerUnit: "Rp 22.500.000",
-    totalInvest: "Rp 112.500.000",
-    revenueShare: "70%",
-    estMonthly: "Rp 3.500.000",
+    pricePerUnit: "Rp 16.000.000",
+    totalInvest: "Rp 80.000.000",
+    revenueShare: "Rp 900.000 / motor",
+    estMonthly: "Rp 4.500.000",
     tenor: "24 bulan",
     highlight: false,
   },
   {
     name: "Growth",
     units: 10,
-    pricePerUnit: "Rp 21.000.000",
-    totalInvest: "Rp 210.000.000",
-    revenueShare: "72%",
-    estMonthly: "Rp 7.200.000",
+    pricePerUnit: "Rp 16.000.000",
+    totalInvest: "Rp 160.000.000",
+    revenueShare: "Rp 950.000 / motor",
+    estMonthly: "Rp 9.500.000",
     tenor: "24 bulan",
     highlight: true,
   },
   {
     name: "Enterprise",
     units: 20,
-    pricePerUnit: "Rp 20.000.000",
-    totalInvest: "Rp 400.000.000",
-    revenueShare: "75%",
-    estMonthly: "Rp 15.000.000",
-    tenor: "36 bulan",
+    pricePerUnit: "Rp 16.000.000",
+    totalInvest: "Rp 320.000.000",
+    revenueShare: "Rp 1.000.000 / motor",
+    estMonthly: "Rp 20.000.000",
+    tenor: "24 bulan",
     highlight: false,
   },
 ];
