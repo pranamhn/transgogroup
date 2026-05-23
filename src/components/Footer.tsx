@@ -29,7 +29,7 @@ export default function Footer() {
         <div className="footer-links">
           <div className="footer-col">
             <h4>{ft.colBusiness}</h4>
-            {["Transgo Mobility", "EV Ride Mobility", "Transgo Garage"].map((b) => (
+            {["Transgo Mobility", "EV Ride Mobility", "Transgo Garage", "Transgo GPS"].map((b) => (
               <span key={b}>{b}</span>
             ))}
           </div>
