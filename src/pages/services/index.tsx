@@ -1,81 +1,34 @@
 import { BatteryCharging, Bike, ChartNoAxesCombined, MapPinned, ShieldCheck, Wrench } from "lucide-react";
 import { FadeSection, PageHero, SectionLabel } from "../../components/ui";
 import DriverProcess from "../../components/DriverProcess";
-
-const operatorStats = [
-  { v: "524", l: "2W EV Aktif" },
-  { v: "60K+", l: "Biaya Harian Mulai" },
-  { v: "Ojol", l: "Ride-hailing Focus" },
-];
-
-const operatingPillars = [
-  {
-    icon: <Bike size={24} />,
-    title: "Ride-Hailing Ready Unit",
-    copy: "Motor listrik disiapkan untuk ritme kerja driver ojol: jarak harian tinggi, waktu aktif panjang, dan kebutuhan unit yang mudah dipakai.",
-  },
-  {
-    icon: <BatteryCharging size={24} />,
-    title: "Lower Energy Cost",
-    copy: "EV membantu menekan biaya energi harian, sehingga driver punya ruang margin lebih baik dibanding operasional motor berbahan bakar.",
-  },
-  {
-    icon: <Wrench size={24} />,
-    title: "Fleet Uptime Support",
-    copy: "Transgo menjaga unit tetap siap jalan melalui basic check-up, perawatan berkala, dan support teknis untuk armada aktif.",
-  },
-  {
-    icon: <ChartNoAxesCombined size={24} />,
-    title: "Driver & Utilization Data",
-    copy: "Status driver, penggunaan unit, dan kebutuhan maintenance dipantau untuk menjaga produktivitas fleet secara berkelanjutan.",
-  },
-];
-
-const packages = [
-  {
-    name: "Ojol EV Starter",
-    tag: "Driver Ride-Hailing",
-    price: "Rp60.000",
-    desc: "Skema sewa motor listrik untuk driver ojol yang membutuhkan unit siap kerja dengan biaya harian transparan.",
-    items: ["Unit EV siap jalan", "Onboarding penggunaan EV", "Support driver", "Servis berkala"],
-  },
-  {
-    name: "Driver Community Fleet",
-    tag: "Komunitas Ojol",
-    price: "Custom",
-    desc: "Alokasi unit untuk komunitas driver, koperasi, atau koordinator lapangan dengan kebutuhan beberapa motor EV.",
-    items: ["Alokasi multi-unit", "Koordinasi driver", "Harga volume", "Reporting armada"],
-  },
-  {
-    name: "Platform & Last-Mile Partner",
-    tag: "B2B Partner",
-    price: "Custom",
-    desc: "Dukungan armada EV untuk platform ride-hailing, delivery, dan kebutuhan last-mile dengan kontrol operasional.",
-    items: ["SLA operasional", "Reporting berkala", "Maintenance support", "Account handling"],
-  },
-];
+import { useLang } from "../../i18n";
+import { useSiteMetrics } from "../../siteMetrics";
 
 export default function TwoWFleetOperatorPage() {
+  const { t } = useLang();
+  const { metrics } = useSiteMetrics();
+  const sv = t.services;
+  const overviewStats = [
+    { v: metrics.evMotor, l: sv.overviewStats[0]?.l ?? "2W EV Aktif" },
+    { v: metrics.dailyEvPrice, l: sv.overviewStats[1]?.l ?? "Biaya Harian Mulai" },
+    sv.overviewStats[2] ?? { v: "Ojol", l: "Ride-hailing Focus" },
+  ];
+
+  const pillarIcons = [<Bike size={24} />, <BatteryCharging size={24} />, <Wrench size={24} />, <ChartNoAxesCombined size={24} />];
+  const coverageIcons = [<MapPinned size={22} />, <ShieldCheck size={22} />, <BatteryCharging size={22} />];
+
   return (
     <>
-      <PageHero
-        kicker="2W Fleet Operator"
-        title="Armada motor listrik untuk mendukung ride-hailing Indonesia."
-        copy="Transgo fokus membangun 2W EV fleet yang membantu driver ojek online bekerja lebih efisien: biaya energi lebih rendah, unit siap jalan, support operasional, dan perawatan yang terstruktur."
-      />
+      <PageHero kicker={sv.heroKicker} title={sv.heroTitle} copy={sv.heroCopy} />
 
       <FadeSection className="section two-w-overview-section">
         <div className="two-w-hero-card">
           <div className="two-w-copy">
-            <SectionLabel>EV Two-Wheeler Fleet</SectionLabel>
-            <h2>Transgo mendukung driver ride-hailing berpindah ke EV.</h2>
-            <p>
-              2W Fleet Operator adalah lini Transgo yang berfokus pada motor listrik untuk ekonomi
-              ride-hailing Indonesia. Kami menghubungkan unit EV, driver aktif, komunitas ojol,
-              maintenance support, dan data utilisasi dalam satu model operasi.
-            </p>
+            <SectionLabel>{sv.overviewLabel}</SectionLabel>
+            <h2>{sv.overviewH2}</h2>
+            <p>{sv.overviewP}</p>
             <div className="two-w-stats">
-              {operatorStats.map((s) => (
+              {overviewStats.map((s) => (
                 <div key={s.l}>
                   <strong>{s.v}</strong>
                   <span>{s.l}</span>
@@ -85,9 +38,9 @@ export default function TwoWFleetOperatorPage() {
           </div>
           <div className="two-w-visual">
             <div className="two-w-visual-panel">
-              <span>Operating Model</span>
-              <strong>Ride-hailing EV support</strong>
-              <p>Motor listrik, driver aktif, biaya energi lebih efisien.</p>
+              <span>{sv.panelLabel}</span>
+              <strong>{sv.panelTitle}</strong>
+              <p>{sv.panelDesc}</p>
             </div>
           </div>
         </div>
@@ -95,13 +48,13 @@ export default function TwoWFleetOperatorPage() {
 
       <FadeSection className="section section--alt two-w-pillars-section">
         <div className="section-head">
-          <SectionLabel>2W EV Operating Layer</SectionLabel>
-          <h2>Lapisan operasi untuk mendukung driver ojol Indonesia.</h2>
+          <SectionLabel>{sv.pillarsLabel}</SectionLabel>
+          <h2>{sv.pillarsH2}</h2>
         </div>
         <div className="two-w-pillars-grid">
-          {operatingPillars.map((p) => (
+          {sv.pillarItems.map((p, i) => (
             <article key={p.title} className="two-w-pillar-card">
-              <span className="two-w-icon">{p.icon}</span>
+              <span className="two-w-icon">{pillarIcons[i]}</span>
               <h3>{p.title}</h3>
               <p>{p.copy}</p>
             </article>
@@ -111,11 +64,11 @@ export default function TwoWFleetOperatorPage() {
 
       <FadeSection className="section two-w-packages-section">
         <div className="section-head">
-          <SectionLabel>Skema Dukungan</SectionLabel>
-          <h2>Model kerja sama untuk driver, komunitas, dan platform.</h2>
+          <SectionLabel>{sv.packagesLabel}</SectionLabel>
+          <h2>{sv.packagesH2}</h2>
         </div>
         <div className="two-w-package-grid">
-          {packages.map((p) => (
+          {sv.packages.map((p) => (
             <article key={p.name} className="two-w-package-card">
               <span className="two-w-package-tag">{p.tag}</span>
               <h3>{p.name}</h3>
@@ -132,22 +85,15 @@ export default function TwoWFleetOperatorPage() {
       <FadeSection className="section section--alt two-w-coverage-section">
         <div className="two-w-coverage-card">
           <div>
-            <SectionLabel>Ride-Hailing Coverage</SectionLabel>
-            <h2>Disiapkan untuk area dengan demand driver aktif.</h2>
-            <p>
-              Fokus Transgo adalah wilayah dengan aktivitas ojek online tinggi, kebutuhan unit terjangkau,
-              akses maintenance, dan potensi utilisasi harian yang kuat.
-            </p>
+            <SectionLabel>{sv.coverageLabel}</SectionLabel>
+            <h2>{sv.coverageH2}</h2>
+            <p>{sv.coverageP}</p>
           </div>
           <div className="two-w-coverage-list">
-            {[
-              { icon: <MapPinned size={22} />, label: "Area ride-hailing prioritas seluruh Jawa" },
-              { icon: <ShieldCheck size={22} />, label: "Onboarding driver dan komunitas terstruktur" },
-              { icon: <BatteryCharging size={22} />, label: "Motor EV siap pakai untuk operasional harian" },
-            ].map((item) => (
-              <div key={item.label}>
-                {item.icon}
-                <span>{item.label}</span>
+            {sv.coverageItems.map((item, i) => (
+              <div key={item}>
+                {coverageIcons[i]}
+                <span>{item}</span>
               </div>
             ))}
           </div>
@@ -157,12 +103,9 @@ export default function TwoWFleetOperatorPage() {
       <FadeSection className="section fleet-contact-section">
         <div className="fleet-contact-card">
           <div className="fleet-contact-copy">
-            <SectionLabel>Kanal Kontak Sewa Kendaraan</SectionLabel>
-            <h2>Butuh motor EV untuk jalan hari ini?</h2>
-            <p>
-              Hubungi tim fleet partner untuk cek ketersediaan motor listrik, proses dokumen,
-              dan jadwal serah terima kendaraan.
-            </p>
+            <SectionLabel>{sv.contactLabel}</SectionLabel>
+            <h2>{sv.contactH2}</h2>
+            <p>{sv.contactP}</p>
           </div>
           <div className="fleet-contact-actions">
             <a href="https://www.instagram.com/transgo.fleetpartner" target="_blank" rel="noreferrer" className="fleet-contact-link">

@@ -1,4 +1,4 @@
-export type Route = "/" | "/about" | "/2w-fleet-operator" | "/4w-fleet-operator" | "/workshop" | "/platform" | "/investor-partners" | "/visi-2030" | "/contact";
+export type Route = "/" | "/about" | "/2w-fleet-operator" | "/4w-fleet-operator" | "/workshop" | "/platform" | "/investor-partners" | "/visi-2030" | "/contact" | "/admin/dashboard";
 export type NavItem       = { label: string; href: Route };
 export type VehiclePrice  = { name: string; type: string; originalPrice: number; offerPrice: number };
 export type CashbackItem  = { title: string; detail: string };
