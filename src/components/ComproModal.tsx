@@ -25,29 +25,34 @@ export default function ComproModal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  /* ── Fetch PDF from Supabase URL and create local blob URL ── */
+  /* ── Fetch PDF, create blob URL for download, load into pdfjs via ArrayBuffer ── */
   useEffect(() => {
     if (!pdfData?.url) { setBlobUrl(null); setPdfDoc(null); return; }
+    let cancelled = false;
     let objectUrl: string;
+
     fetch(pdfData.url)
-      .then((r) => r.blob())
-      .then((blob) => {
+      .then((r) => r.arrayBuffer())
+      .then((buffer) => {
+        if (cancelled) return;
+        const blob = new Blob([buffer], { type: "application/pdf" });
         objectUrl = URL.createObjectURL(blob);
         setBlobUrl(objectUrl);
+        setPage(1);
+        setScale(SCALE_NORMAL);
+        return pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+      })
+      .then((doc) => {
+        if (cancelled || !doc) return;
+        setPdfDoc(doc);
+        setTotalPages(doc.numPages);
       });
-    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
-  }, [pdfData?.url]);
 
-  /* ── Load PDF document ── */
-  useEffect(() => {
-    if (!blobUrl) return;
-    setPage(1);
-    setScale(SCALE_NORMAL);
-    pdfjs.getDocument(blobUrl).promise.then((doc) => {
-      setPdfDoc(doc);
-      setTotalPages(doc.numPages);
-    });
-  }, [blobUrl]);
+    return () => {
+      cancelled = true;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [pdfData?.url]);
 
   /* ── Render page ── */
   const renderPage = useCallback(async (doc: PdfDoc, pageNum: number, sc: number) => {
@@ -57,10 +62,16 @@ export default function ComproModal() {
       const pg = await doc.getPage(pageNum);
       const viewport = pg.getViewport({ scale: sc });
       const canvas = canvasRef.current;
+      if (!canvas) return;
       canvas.width = viewport.width;
       canvas.height = viewport.height;
-      const ctx = canvas.getContext("2d")!;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) { console.error("Canvas 2d context null"); return; }
+      console.log("Rendering page", pageNum, "size", viewport.width, "x", viewport.height);
       await pg.render({ canvasContext: ctx, viewport, canvas }).promise;
+      console.log("Render done");
+    } catch (err) {
+      console.error("pdfjs render error:", err);
     } finally {
       setRendering(false);
     }
