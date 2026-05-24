@@ -160,14 +160,15 @@ export default function AdminPage() {
     setPdfUploading(true);
     setMessage("Mengupload PDF ke cloud...");
     const { error } = await supabase.storage
-      .from("compro")
+      .from("transgo-compro")
       .upload("latest.pdf", file, { upsert: true, contentType: "application/pdf" });
     if (error) {
-      setMessage(`Upload gagal: ${error.message}`);
+      console.error("Supabase upload error:", error);
+      setMessage(`Upload gagal: ${error.message} (cek console F12 untuk detail)`);
       setPdfUploading(false);
       return;
     }
-    const { data: { publicUrl } } = supabase.storage.from("compro").getPublicUrl("latest.pdf");
+    const { data: { publicUrl } } = supabase.storage.from("transgo-compro").getPublicUrl("latest.pdf");
     const url = `${publicUrl}?t=${Date.now()}`;
     setPdf({ url, filename: file.name });
     setMessage(`Company Profile "${file.name}" berhasil diupload dan tersimpan di cloud.`);
@@ -175,7 +176,7 @@ export default function AdminPage() {
   };
 
   const handleClearPdf = async () => {
-    await supabase.storage.from("compro").remove(["latest.pdf"]);
+    await supabase.storage.from("transgo-compro").remove(["latest.pdf"]);
     clearPdf();
     setMessage("Company Profile dihapus.");
   };
