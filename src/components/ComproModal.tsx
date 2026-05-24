@@ -40,7 +40,10 @@ export default function ComproModal() {
         setBlobUrl(objectUrl);
         setPage(1);
         setScale(SCALE_NORMAL);
-        return pdfjs.getDocument({ data: new Uint8Array(buffer) }).promise;
+        return pdfjs.getDocument({
+          data: new Uint8Array(buffer),
+          wasmUrl: "/pdfjs-wasm/",
+        }).promise;
       })
       .then((doc) => {
         if (cancelled || !doc) return;
