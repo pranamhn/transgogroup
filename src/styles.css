@@ -4073,6 +4073,8 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .compro-upload-empty:hover { border-color: var(--blue); background: #eef2ff; color: var(--blue); }
 .compro-upload-empty strong { font-size: 0.9rem; color: var(--ink); }
 .compro-upload-empty span { font-size: 0.78rem; }
+.compro-spinner { animation: spin 1s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 .compro-upload-active {
   display: flex;

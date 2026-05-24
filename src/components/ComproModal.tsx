@@ -8,13 +8,6 @@ pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   import.meta.url
 ).toString();
 
-function dataUrlToBlob(dataUrl: string): string {
-  const [header, base64] = dataUrl.split(",");
-  const mime = header.match(/:(.*?);/)?.[1] ?? "application/pdf";
-  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-  return URL.createObjectURL(new Blob([bytes], { type: mime }));
-}
-
 type PdfDoc = Awaited<ReturnType<typeof pdfjs.getDocument>["promise"]>;
 
 const SCALE_NORMAL     = 1.0;
@@ -32,13 +25,18 @@ export default function ComproModal() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
-  /* ── Load blob URL ── */
+  /* ── Fetch PDF from Supabase URL and create local blob URL ── */
   useEffect(() => {
-    if (!pdfData?.dataUrl) { setBlobUrl(null); setPdfDoc(null); return; }
-    const url = dataUrlToBlob(pdfData.dataUrl);
-    setBlobUrl(url);
-    return () => URL.revokeObjectURL(url);
-  }, [pdfData?.dataUrl]);
+    if (!pdfData?.url) { setBlobUrl(null); setPdfDoc(null); return; }
+    let objectUrl: string;
+    fetch(pdfData.url)
+      .then((r) => r.blob())
+      .then((blob) => {
+        objectUrl = URL.createObjectURL(blob);
+        setBlobUrl(objectUrl);
+      });
+    return () => { if (objectUrl) URL.revokeObjectURL(objectUrl); };
+  }, [pdfData?.url]);
 
   /* ── Load PDF document ── */
   useEffect(() => {

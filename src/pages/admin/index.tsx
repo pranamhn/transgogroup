@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { BarChart3, Car, Cloud, Download, FileText, Gauge, Home, Info, Save, Target, Trash2, Upload, Wallet } from "lucide-react";
+import { BarChart3, Car, Cloud, Download, FileText, Gauge, Home, Info, Loader2, Save, Target, Trash2, Upload, Wallet } from "lucide-react";
 import { defaultSiteMetrics, type SiteMetrics, useSiteMetrics } from "../../siteMetrics";
 import { type VehicleCatalogItem, useVehicleCatalog } from "../../vehicleCatalog";
 import { useCompro } from "../../comproPdf";
+import { supabase } from "../../supabase";
 
 type AdminSection = "home" | "about" | "fleet" | "investor" | "vision" | "api";
 
@@ -148,19 +149,35 @@ export default function AdminPage() {
     setMessage("JSON metrics sudah disalin ke clipboard.");
   };
 
-  const handlePdfUpload = (file?: File) => {
+  const [pdfUploading, setPdfUploading] = useState(false);
+
+  const handlePdfUpload = async (file?: File) => {
     if (!file) return;
     if (file.size > 10 * 1024 * 1024) {
       setMessage("PDF terlalu besar (maks. 10MB). Gunakan file yang lebih kecil.");
       return;
     }
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      setPdf({ dataUrl, filename: file.name });
-      setMessage(`Company Profile "${file.name}" berhasil diupload.`);
-    };
-    reader.readAsDataURL(file);
+    setPdfUploading(true);
+    setMessage("Mengupload PDF ke cloud...");
+    const { error } = await supabase.storage
+      .from("compro")
+      .upload("latest.pdf", file, { upsert: true, contentType: "application/pdf" });
+    if (error) {
+      setMessage(`Upload gagal: ${error.message}`);
+      setPdfUploading(false);
+      return;
+    }
+    const { data: { publicUrl } } = supabase.storage.from("compro").getPublicUrl("latest.pdf");
+    const url = `${publicUrl}?t=${Date.now()}`;
+    setPdf({ url, filename: file.name });
+    setMessage(`Company Profile "${file.name}" berhasil diupload dan tersimpan di cloud.`);
+    setPdfUploading(false);
+  };
+
+  const handleClearPdf = async () => {
+    await supabase.storage.from("compro").remove(["latest.pdf"]);
+    clearPdf();
+    setMessage("Company Profile dihapus.");
   };
 
   const handleSave = () => {
@@ -307,7 +324,13 @@ export default function AdminPage() {
                 <FileText size={18} />
               </div>
               <div className="compro-upload-area">
-                {pdfData ? (
+                {pdfUploading ? (
+                  <div className="compro-upload-empty">
+                    <Loader2 size={28} className="compro-spinner" />
+                    <strong>Mengupload ke cloud…</strong>
+                    <span>Mohon tunggu sebentar</span>
+                  </div>
+                ) : pdfData ? (
                   <div className="compro-upload-active">
                     <div className="compro-upload-info">
                       <FileText size={20} />
@@ -320,7 +343,7 @@ export default function AdminPage() {
                       <button type="button" className="compro-replace-btn" onClick={() => pdfInputRef.current?.click()}>
                         <Upload size={14} /> Ganti PDF
                       </button>
-                      <button type="button" className="compro-delete-btn" onClick={() => { clearPdf(); setMessage("Company Profile dihapus."); }}>
+                      <button type="button" className="compro-delete-btn" onClick={handleClearPdf}>
                         <Trash2 size={14} /> Hapus
                       </button>
                     </div>
