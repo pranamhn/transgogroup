@@ -39,8 +39,8 @@ export default function App() {
 
   return (
     <ComproProvider>
-      {route === "/admin/dashboard" ? (
-        <AdminPage />
+      {route === "/admin/dashboard" || route === "/register" ? (
+        renderRoute(route)
       ) : (
         <>
           <Header route={route} />

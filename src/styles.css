@@ -5817,216 +5817,215 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   REGISTER PAGE
+   REGISTER PAGE  (standalone — no site header/footer)
 ═══════════════════════════════════════════════════════════════ */
-.reg-page { background: var(--surface); min-height: 100vh; }
+.reg-standalone { background: var(--surface); min-height: 100vh; }
 
-/* Hero */
+/* ── Topbar ── */
+.reg-topbar {
+  position: sticky; top: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; height: 56px;
+  background: #fff; border-bottom: 1px solid var(--line);
+}
+.reg-brand {
+  font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em;
+  color: var(--blue);
+}
+.reg-back-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: none; border: none; cursor: pointer;
+  font-size: 0.82rem; font-weight: 600; color: var(--muted);
+  padding: 6px 0;
+  transition: color 0.15s;
+}
+.reg-back-btn:hover { color: var(--ink); }
+
+/* ── Hero ── */
 .reg-hero {
   background: linear-gradient(135deg, var(--blue-dk) 0%, var(--blue) 100%);
-  padding: 72px 24px 56px;
+  padding: 56px 24px 48px;
   text-align: center;
   color: #fff;
 }
-.reg-hero-inner { max-width: 640px; margin: 0 auto; }
+.reg-hero-inner { max-width: 620px; margin: 0 auto; }
 .reg-kicker {
   display: inline-block;
   background: rgba(255,255,255,0.15);
   border: 1px solid rgba(255,255,255,0.3);
   border-radius: 100px;
   padding: 4px 14px;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-bottom: 16px;
+  font-size: 0.7rem; font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 14px;
 }
-.reg-hero h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); font-weight: 700; margin: 0 0 12px; }
-.reg-hero p  { font-size: 0.95rem; opacity: 0.85; line-height: 1.65; margin: 0 0 20px; }
+.reg-hero h1 { font-size: clamp(1.5rem, 4vw, 2rem); font-weight: 700; margin: 0 0 10px; }
+.reg-hero p  { font-size: 0.9rem; opacity: 0.85; line-height: 1.65; margin: 0 0 18px; }
 .reg-hero-address {
   display: inline-flex; align-items: flex-start; gap: 6px;
-  background: rgba(255,255,255,0.12);
-  border-radius: 8px; padding: 8px 14px;
-  font-size: 0.78rem; opacity: 0.9; text-align: left;
+  background: rgba(255,255,255,0.12); border-radius: 8px;
+  padding: 8px 14px; font-size: 0.76rem; opacity: 0.9; text-align: left;
 }
 .reg-hero-address svg { flex-shrink: 0; margin-top: 2px; }
 
-/* Form wrapper */
-.reg-form { max-width: 780px; margin: 0 auto; padding: 40px 20px 80px; display: flex; flex-direction: column; gap: 32px; }
+/* ── Form wrapper ── */
+.reg-form { max-width: 760px; margin: 0 auto; padding: 32px 20px 80px; display: flex; flex-direction: column; gap: 20px; }
 
-/* Section */
+/* ── Section ── */
 .reg-section {
-  background: #fff;
-  border-radius: 16px;
-  border: 1px solid var(--line);
-  padding: 28px 24px;
+  background: #fff; border-radius: 16px;
+  border: 1px solid var(--line); padding: 24px 22px;
+}
+
+/* Section header with number badge */
+.reg-section-head { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 20px; }
+.reg-section-num {
+  flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px;
+  background: var(--blue); color: #fff;
+  font-size: 0.7rem; font-weight: 800; letter-spacing: 0.04em;
+  display: flex; align-items: center; justify-content: center;
+  margin-top: 2px;
 }
 .reg-section-title {
-  font-size: 1rem; font-weight: 700; color: var(--ink);
-  margin: 0 0 6px;
+  font-size: 0.95rem; font-weight: 700; color: var(--ink); margin: 0 0 4px;
 }
 .reg-section-title em { color: var(--blue); font-style: normal; margin-left: 2px; }
-.reg-section-desc { font-size: 0.8rem; color: var(--muted); margin: 0 0 20px; }
+.reg-section-desc { font-size: 0.78rem; color: var(--muted); margin: 0; line-height: 1.5; }
 
-/* Fields grid */
-.reg-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* ── Fields grid ── */
+.reg-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .reg-field { display: flex; flex-direction: column; gap: 6px; }
 .reg-field--full { grid-column: 1 / -1; }
-.reg-field-label { font-size: 0.82rem; font-weight: 600; color: var(--ink); }
-.reg-field-label em { color: var(--blue); font-style: normal; margin-left: 2px; }
-.reg-field-hint { font-size: 0.72rem; color: var(--muted); }
+.reg-field-label { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
+.reg-field-label em { color: var(--blue); font-style: normal; margin-left: 1px; }
+.reg-field-hint { font-size: 0.71rem; color: var(--muted); }
 
-/* Input */
+/* ── Input ── */
 .reg-input {
-  height: 44px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 0 14px;
-  font-size: 0.875rem;
-  color: var(--ink);
-  background: var(--surface);
-  outline: none;
-  transition: border-color 0.15s;
-  width: 100%;
-  box-sizing: border-box;
+  height: 44px; border: 1.5px solid var(--line); border-radius: 10px;
+  padding: 0 14px; font-size: 0.875rem; color: var(--ink);
+  background: var(--surface); outline: none;
+  transition: border-color 0.15s; width: 100%; box-sizing: border-box;
 }
 .reg-input:focus { border-color: var(--blue); background: #fff; }
-.reg-input::placeholder { color: var(--muted); }
+.reg-input::placeholder { color: var(--muted); opacity: 0.7; }
 
-/* Select */
+/* ── Select ── */
 .reg-select-wrap { position: relative; }
 .reg-select {
-  appearance: none;
-  height: 44px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  padding: 0 36px 0 14px;
-  font-size: 0.875rem;
-  color: var(--ink);
-  background: var(--surface);
-  outline: none;
-  width: 100%;
-  box-sizing: border-box;
-  cursor: pointer;
+  appearance: none; height: 44px; border: 1.5px solid var(--line);
+  border-radius: 10px; padding: 0 36px 0 14px; font-size: 0.875rem;
+  color: var(--ink); background: var(--surface); outline: none;
+  width: 100%; box-sizing: border-box; cursor: pointer;
   transition: border-color 0.15s;
 }
 .reg-select:focus { border-color: var(--blue); background: #fff; }
 .reg-select-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
 
-/* Unit cards grid */
-.reg-unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 4px; }
+/* ── Unit cards ── */
+.reg-unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
 .reg-unit-card {
-  position: relative;
-  border: 1.5px solid var(--line);
-  border-radius: 12px;
-  padding: 14px 14px 14px 14px;
-  cursor: pointer;
-  background: var(--surface);
-  display: flex; flex-direction: column; gap: 4px;
+  position: relative; border: 1.5px solid var(--line); border-radius: 12px;
+  padding: 13px 13px 13px 13px; cursor: pointer; background: var(--surface);
+  display: flex; flex-direction: column; gap: 3px;
   transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
 }
-.reg-unit-card--on { border-color: var(--blue); background: #eef2ff; box-shadow: 0 0 0 3px rgba(43,68,204,0.1); }
+.reg-unit-card--on { border-color: var(--blue); background: #eef2ff; box-shadow: 0 0 0 3px rgba(43,68,204,0.08); }
 .reg-unit-tag {
-  font-size: 0.67rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--blue); background: rgba(43,68,204,0.1); border-radius: 100px;
-  padding: 2px 8px; width: fit-content;
+  padding: 2px 7px; width: fit-content;
 }
-.reg-unit-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); margin-top: 4px; }
-.reg-unit-price { font-size: 0.8rem; color: var(--muted); }
-.reg-unit-check {
-  position: absolute; top: 12px; right: 12px;
-  color: var(--blue); opacity: 0.3;
-}
+.reg-unit-name { font-size: 0.83rem; font-weight: 600; color: var(--ink); margin-top: 4px; line-height: 1.3; }
+.reg-unit-price { font-size: 0.78rem; color: var(--muted); }
+.reg-unit-check { position: absolute; top: 11px; right: 11px; color: var(--blue); opacity: 0.25; }
 .reg-unit-card--on .reg-unit-check { opacity: 1; }
 
-/* Checkbox list */
-.reg-check-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+/* ── Checkbox list ── */
+.reg-check-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .reg-check-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 14px; border-radius: 10px;
-  border: 1.5px solid var(--line);
-  cursor: pointer; font-size: 0.875rem; color: var(--ink);
-  background: var(--surface);
-  transition: border-color 0.15s, background 0.15s;
+  display: flex; align-items: center; gap: 9px;
+  padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--line);
+  cursor: pointer; font-size: 0.84rem; color: var(--ink);
+  background: var(--surface); transition: border-color 0.15s, background 0.15s;
   user-select: none;
 }
 .reg-check-item--on { border-color: var(--blue); background: #eef2ff; color: var(--blue); font-weight: 600; }
-.reg-check-box { color: var(--blue); display: flex; }
+.reg-check-box { color: var(--blue); display: flex; flex-shrink: 0; }
 
-/* Upload grid */
-.reg-upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 4px; }
+/* ── Upload grid ── */
+.reg-upload-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .reg-upload-field { display: flex; flex-direction: column; gap: 6px; }
 .reg-upload-box {
-  border: 2px dashed var(--line);
-  border-radius: 12px; padding: 20px 12px;
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  border: 2px dashed var(--line); border-radius: 12px; padding: 18px 10px;
+  display: flex; flex-direction: column; align-items: center; gap: 5px;
   cursor: pointer; color: var(--muted); background: var(--surface);
-  transition: border-color 0.15s, background 0.15s;
-  text-align: center;
+  transition: border-color 0.15s, background 0.15s; text-align: center;
 }
 .reg-upload-box:hover { border-color: var(--blue); background: #eef2ff; color: var(--blue); }
-.reg-upload-box strong { font-size: 0.8rem; }
-.reg-upload-box small { font-size: 0.72rem; }
+.reg-upload-box strong { font-size: 0.78rem; }
+.reg-upload-box small { font-size: 0.7rem; }
 .reg-upload-preview {
   display: flex; align-items: center; justify-content: space-between;
   border: 1.5px solid var(--blue); border-radius: 10px; padding: 10px 12px;
-  background: #eef2ff; font-size: 0.8rem; color: var(--blue); gap: 8px;
+  background: #eef2ff; font-size: 0.78rem; color: var(--blue); gap: 8px;
 }
 .reg-upload-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
 .reg-upload-preview button { background: none; border: none; cursor: pointer; color: var(--blue); display: flex; flex-shrink: 0; }
 
-/* Submit */
-.reg-submit-row { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 8px 0; }
-.reg-submit-note { font-size: 0.78rem; color: var(--muted); text-align: center; max-width: 480px; margin: 0; }
+/* ── Submit ── */
+.reg-submit-row { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0; }
+.reg-submit-note { font-size: 0.76rem; color: var(--muted); text-align: center; max-width: 480px; margin: 0; line-height: 1.5; }
 .reg-submit-btn {
   display: inline-flex; align-items: center; gap: 10px;
-  background: var(--blue); color: #fff;
-  border: none; border-radius: 12px;
-  padding: 14px 40px; font-size: 1rem; font-weight: 700;
+  background: var(--blue); color: #fff; border: none; border-radius: 12px;
+  padding: 14px 40px; font-size: 0.95rem; font-weight: 700;
   cursor: pointer; transition: background 0.15s, transform 0.1s;
-  width: 100%; max-width: 360px; justify-content: center;
+  width: 100%; max-width: 340px; justify-content: center;
 }
 .reg-submit-btn:hover { background: var(--blue-dk); }
 .reg-submit-btn:active { transform: scale(0.98); }
 .reg-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-/* Spin */
+/* ── Misc ── */
 .reg-spin { animation: spin 1s linear infinite; }
-
-/* Hidden */
 .reg-hidden { display: none; }
 
-/* Success */
+/* ── Success ── */
 .reg-success {
-  min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 40px 20px;
+  min-height: calc(100vh - 56px);
+  display: flex; align-items: center; justify-content: center; padding: 40px 20px;
 }
 .reg-success-card {
   background: #fff; border-radius: 20px; border: 1px solid var(--line);
-  padding: 48px 36px; max-width: 440px; width: 100%; text-align: center;
-  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  padding: 48px 32px; max-width: 420px; width: 100%; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
 }
 .reg-success-icon {
-  width: 64px; height: 64px; border-radius: 50%;
+  width: 60px; height: 60px; border-radius: 50%;
   background: linear-gradient(135deg, var(--blue), #5b7fff);
-  color: #fff; font-size: 1.8rem; font-weight: 700;
+  color: #fff; font-size: 1.7rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
-.reg-success-card h2 { font-size: 1.4rem; font-weight: 700; color: var(--ink); margin: 0; }
-.reg-success-card p  { font-size: 0.9rem; color: var(--muted); line-height: 1.6; margin: 0; }
+.reg-success-card h2 { font-size: 1.3rem; font-weight: 700; color: var(--ink); margin: 0; }
+.reg-success-card p  { font-size: 0.88rem; color: var(--muted); line-height: 1.6; margin: 0; }
 .reg-btn-back {
-  margin-top: 8px; background: none; border: 1.5px solid var(--line);
+  margin-top: 6px; background: none; border: 1.5px solid var(--line);
   border-radius: 10px; padding: 10px 28px; font-size: 0.875rem;
-  color: var(--muted); cursor: pointer; transition: border-color 0.15s;
+  color: var(--muted); cursor: pointer; transition: border-color 0.15s, color 0.15s;
 }
 .reg-btn-back:hover { border-color: var(--blue); color: var(--blue); }
 
-/* Responsive */
+/* ── Responsive ── */
 @media (max-width: 600px) {
+  .reg-form { padding: 20px 14px 64px; gap: 14px; }
+  .reg-section { padding: 20px 16px; }
   .reg-fields { grid-template-columns: 1fr; }
+  .reg-check-list { grid-template-columns: 1fr; }
   .reg-upload-grid { grid-template-columns: 1fr; }
   .reg-unit-grid { grid-template-columns: 1fr 1fr; }
-  .reg-section { padding: 20px 16px; }
+  .reg-hero { padding: 40px 20px 36px; }
 }
-@media (max-width: 400px) {
+@media (max-width: 380px) {
   .reg-unit-grid { grid-template-columns: 1fr; }
 }
