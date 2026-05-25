@@ -5984,6 +5984,12 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .reg-upload-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
 .reg-upload-preview button { background: none; border: none; cursor: pointer; color: var(--blue); display: flex; flex-shrink: 0; }
 
+/* ── Dynamic checklist fields ── */
+.reg-dyn-fields { display: flex; flex-direction: column; gap: 16px; }
+.reg-dyn-field  { display: flex; flex-direction: column; gap: 8px; }
+/* hide the empty label inside FileUploadBox when used inside a dyn field */
+.reg-dyn-field .reg-upload-field > .reg-field-label:empty { display: none; }
+
 /* ── Loading / Error ── */
 .reg-loading-row {
   display: flex; align-items: center; gap: 8px;

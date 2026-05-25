@@ -4,7 +4,7 @@ import { go } from "../../hooks";
 import {
   COMPANY_ID, CHECKLIST_ID,
   type CatalogUnit, type Pool, type ChecklistField, type CheckpointItem,
-  fetchVehicleCatalogs, fetchPools, fetchChecklistFields,
+  fetchVehicleCatalogs, fetchPools, fetchChecklistFields, fetchFieldOptions,
   uploadFile, submitLead, submitChecklist,
   sanitizePhone, guessFieldKey,
 } from "../../api/register";
@@ -146,7 +146,12 @@ export default function RegisterPage() {
   const [catalogs, setCatalogs] = useState<DisplayUnit[]>([]);
   const [pools, setPools]       = useState<Pool[]>([]);
   const [checklistFields, setChecklistFields] = useState<ChecklistField[]>([]);
+  const [selectOptions, setSelectOptions]     = useState<Record<string, string[]>>({});
   const [loadingData, setLoadingData]         = useState(true);
+
+  /* dynamic field state (keyed by checklist_item id) */
+  const [dynValues, setDynValues] = useState<Record<string, string>>({});
+  const [dynFiles,  setDynFiles]  = useState<Record<string, File | null>>({});
 
   useEffect(() => {
     Promise.all([fetchVehicleCatalogs(), fetchPools(), fetchChecklistFields()])
@@ -154,10 +159,23 @@ export default function RegisterPage() {
         if (cats.length > 0) setCatalogs(cats);
         if (pls.length > 0) setPools(pls);
         setChecklistFields(fields);
+        /* fetch select options for option / all type fields */
+        fields
+          .filter((f) => f.item_type === "option" || f.item_type === "all")
+          .forEach((f) =>
+            fetchFieldOptions(f.id).then((opts) =>
+              setSelectOptions((prev) => ({ ...prev, [f.id]: opts }))
+            )
+          );
       })
       .catch(() => { /* silently fall back to hardcoded data */ })
       .finally(() => setLoadingData(false));
   }, []);
+
+  /* checklist fields not already covered by a static UPLOAD_FIELD */
+  const additionalFields = checklistFields.filter(
+    (f) => guessFieldKey(f.item_name) === null
+  );
 
   const displayUnits = catalogs.length > 0 ? catalogs : FALLBACK_UNITS;
   const displayKota  = pools.length > 0
@@ -225,22 +243,41 @@ export default function RegisterPage() {
         last_name:        form.namaBelakang,
       });
 
-      /* 4 ── Submit checklist (match fields by name) */
+      /* 4 ── Submit checklist */
       if (checklistFields.length > 0) {
         setSubmitStep("Mengirim checklist dokumen...");
-        const checkpoints: CheckpointItem[] = checklistFields
-          .map((field) => {
-            const key = guessFieldKey(field.item_name);
-            if (!key) return null;
-            if (key === "apps") {
-              if (form.apps.length === 0) return null;
-              return { company_id: COMPANY_ID, checklist_item_id: field.id, value: form.apps.join(", "), remarks: "" };
-            }
+
+        /* upload dynamic attachment files */
+        const dynUploaded: Record<string, string> = {};
+        for (const field of additionalFields) {
+          const file = dynFiles[field.id];
+          if (file) dynUploaded[field.id] = await uploadFile(file, "leads");
+        }
+
+        const checkpoints: CheckpointItem[] = [];
+
+        /* matched static fields */
+        for (const field of checklistFields) {
+          const key = guessFieldKey(field.item_name);
+          if (!key) continue;
+          if (key === "apps") {
+            if (form.apps.length === 0) continue;
+            checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value: form.apps.join(", "), remarks: "" });
+          } else {
             const url = uploaded[key];
-            if (!url) return null;
-            return { company_id: COMPANY_ID, checklist_item_id: field.id, value: url, remarks: "" };
-          })
-          .filter((c): c is CheckpointItem => c !== null);
+            if (url) checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value: url, remarks: "" });
+          }
+        }
+
+        /* additional dynamic fields */
+        for (const field of additionalFields) {
+          const fileUrl = dynUploaded[field.id] ?? "";
+          const textVal = dynValues[field.id]   ?? "";
+          const value   = fileUrl || textVal;
+          if (!value) continue;
+          const remarks = (field.item_type === "attachment_free_text" || field.item_type === "all") ? textVal : "";
+          checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value, remarks });
+        }
 
         if (checkpoints.length > 0) await submitChecklist(lead_id, checkpoints);
       }
@@ -435,6 +472,58 @@ export default function RegisterPage() {
             ))}
           </div>
         </div>
+
+        {/* 07 Additional checklist fields from API */}
+        {additionalFields.length > 0 && (
+          <div className="reg-section">
+            <SectionHeader num="07" title="Informasi Tambahan" desc="Lengkapi data berikut sesuai permintaan." />
+            <div className="reg-dyn-fields">
+              {additionalFields.map((field) => {
+                const needsFile = field.item_type === "attachment" || field.item_type === "attachment_free_text" || field.item_type === "all";
+                const needsText = field.item_type === "free_text"  || field.item_type === "attachment_free_text" || field.item_type === "all";
+                const needsOpt  = field.item_type === "option"     || field.item_type === "all";
+                const opts      = selectOptions[field.id] ?? [];
+                return (
+                  <div key={field.id} className="reg-dyn-field">
+                    <span className="reg-field-label">{field.item_name}</span>
+
+                    {needsOpt && opts.length > 0 && (
+                      <div className="reg-select-wrap">
+                        <select
+                          className="reg-select"
+                          value={dynValues[field.id] ?? ""}
+                          onChange={(e) => setDynValues((p) => ({ ...p, [field.id]: e.target.value }))}
+                        >
+                          <option value="">Pilih opsi</option>
+                          {opts.map((o) => <option key={o} value={o}>{o}</option>)}
+                        </select>
+                        <ChevronDown size={16} className="reg-select-icon" />
+                      </div>
+                    )}
+
+                    {needsFile && (
+                      <FileUploadBox
+                        label="" required={false}
+                        file={dynFiles[field.id] ?? null}
+                        onChange={(f) => setDynFiles((p) => ({ ...p, [field.id]: f }))}
+                      />
+                    )}
+
+                    {needsText && (
+                      <input
+                        className="reg-input"
+                        type="text"
+                        placeholder="Keterangan..."
+                        value={dynValues[field.id] ?? ""}
+                        onChange={(e) => setDynValues((p) => ({ ...p, [field.id]: e.target.value }))}
+                      />
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Submit */}
         <div className="reg-submit-row">

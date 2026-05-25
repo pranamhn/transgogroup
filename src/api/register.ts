@@ -134,6 +134,18 @@ export async function fetchChecklistFields(): Promise<ChecklistField[]> {
     }));
 }
 
+export async function fetchFieldOptions(item_id: string): Promise<string[]> {
+  const res = await fetch(
+    `${GATEWAY}/service_vehicle/master-checklist-selects/${item_id}/selects`
+  );
+  const json = await res.json();
+  if (json.status !== "success") return [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (json.data ?? []).flatMap((d: any) =>
+    (d.value ?? "").split(",").map((v: string) => v.trim()).filter(Boolean)
+  );
+}
+
 export async function uploadFile(
   file: File,
   folder: "leads" | "checkpoints" = "leads"
