@@ -5922,24 +5922,27 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .reg-select:focus { border-color: var(--blue); background: #fff; }
 .reg-select-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
 
-/* ── Unit cards ── */
-.reg-unit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
-.reg-unit-card {
-  position: relative; border: 1.5px solid var(--line); border-radius: 12px;
-  padding: 13px 13px 13px 13px; cursor: pointer; background: var(--surface);
-  display: flex; flex-direction: column; gap: 3px;
-  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+/* ── Unit list ── */
+.reg-unit-list { display: flex; flex-direction: column; gap: 0; border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; }
+.reg-unit-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; cursor: pointer;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.12s;
 }
-.reg-unit-card--on { border-color: var(--blue); background: #eef2ff; box-shadow: 0 0 0 3px rgba(43,68,204,0.08); }
+.reg-unit-row:last-child { border-bottom: none; }
+.reg-unit-row--on { background: #eef2ff; }
+.reg-unit-row-check { color: var(--blue); opacity: 0.3; display: flex; flex-shrink: 0; }
+.reg-unit-row--on .reg-unit-row-check { opacity: 1; }
 .reg-unit-tag {
-  font-size: 0.64rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  font-size: 0.62rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--blue); background: rgba(43,68,204,0.1); border-radius: 100px;
-  padding: 2px 7px; width: fit-content;
+  padding: 2px 7px; white-space: nowrap; flex-shrink: 0;
 }
-.reg-unit-name { font-size: 0.83rem; font-weight: 600; color: var(--ink); margin-top: 4px; line-height: 1.3; }
-.reg-unit-price { font-size: 0.78rem; color: var(--muted); }
-.reg-unit-check { position: absolute; top: 11px; right: 11px; color: var(--blue); opacity: 0.25; }
-.reg-unit-card--on .reg-unit-check { opacity: 1; }
+.reg-unit-name { font-size: 0.85rem; font-weight: 600; color: var(--ink); flex: 1; }
+.reg-unit-row--on .reg-unit-name { color: var(--blue); }
+.reg-unit-price { font-size: 0.78rem; color: var(--muted); white-space: nowrap; flex-shrink: 0; }
 
 /* ── Checkbox list ── */
 .reg-check-list { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -6023,9 +6026,5 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
   .reg-fields { grid-template-columns: 1fr; }
   .reg-check-list { grid-template-columns: 1fr; }
   .reg-upload-grid { grid-template-columns: 1fr; }
-  .reg-unit-grid { grid-template-columns: 1fr 1fr; }
   .reg-hero { padding: 40px 20px 36px; }
-}
-@media (max-width: 380px) {
-  .reg-unit-grid { grid-template-columns: 1fr; }
 }
