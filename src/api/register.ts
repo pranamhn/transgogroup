@@ -123,6 +123,7 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
 
   const result: CatalogUnit[] = [];
 
+  if (json.data?.[0]) console.log("[catalog sample]", JSON.stringify(json.data[0].vehicle_model, null, 2));
   for (const c of json.data ?? []) { // eslint-disable-line @typescript-eslint/no-explicit-any
     const fuel = (c.vehicle_model?.fuel_type ?? "").toLowerCase();
     const type = (c.vehicle_model?.type ?? "").toLowerCase();
@@ -139,7 +140,13 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
     const fullName   = hasPricing ? rawModel : [rawModel, desc].filter(Boolean).join(" ");
     const variants   = fullName.split(VARIANT_SEP).filter(Boolean);
 
-    const modelYear = String(c.vehicle_model?.year ?? "").trim();
+    const modelYear = String(
+      c.vehicle_model?.year ??
+      c.vehicle_model?.manufacture_year ??
+      c.vehicle_model?.production_year ??
+      c.vehicle_model?.tahun ??
+      c.year ?? ""
+    ).trim();
 
     if (variants.length === 1) {
       const base = extractName(variants[0]);
