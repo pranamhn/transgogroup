@@ -114,18 +114,21 @@ function extractName(s: string): string {
 /* API uses "ll" (two lowercase L) as the year-variant separator */
 const VARIANT_SEP = /\s*(?:\|\||ll)\s*/;
 
-/* Forced year override when API doesn't return a year for a known vehicle */
-const YEAR_OVERRIDE: Array<[RegExp, string]> = [
-  [/avanza/i,  "2024"],
-  [/sigra\s*d/i, "2025"],
-  [/ertiga/i,  "2023"],
-  [/xl\s*7/i,  "2024"],
+/* Forced year override when API doesn't return a year for a known vehicle.
+   priceRe narrows matches when the same model has multiple year variants. */
+const YEAR_OVERRIDE: Array<[nameRe: RegExp, priceRe: RegExp | null, year: string]> = [
+  [/avanza/i,    /200/,  "2021"],
+  [/avanza/i,    /225/,  "2024"],
+  [/sigra\s*d/i, null,   "2025"],
+  [/ertiga/i,    null,   "2023"],
+  [/xl\s*7/i,    null,   "2024"],
 ];
 
-function forceYear(label: string): string {
+function forceYear(label: string, price?: string): string {
   if (/\b\d{4}\b/.test(label)) return label;
-  for (const [re, yr] of YEAR_OVERRIDE) {
-    if (re.test(label)) return `${label} ${yr}`;
+  for (const [nameRe, priceRe, yr] of YEAR_OVERRIDE) {
+    if (nameRe.test(label) && (!priceRe || priceRe.test(price ?? "")))
+      return `${label} ${yr}`;
   }
   return label;
 }
@@ -166,7 +169,7 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
     if (variants.length === 1) {
       const base = extractName(variants[0]);
       const withApiYear = modelYear && !/\b\d{4}\b/.test(base) ? `${base} ${modelYear}` : base;
-      const label = forceYear(withApiYear);
+      const label = forceYear(withApiYear, extractPrice(variants[0]));
       result.push({ id: c.id, catalogId: c.id, label, price: extractPrice(variants[0]), tag });
     } else {
       /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari ll 2025 Sewa Rp 200.000/hari" */
