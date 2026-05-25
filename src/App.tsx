@@ -14,6 +14,7 @@ import Vision2030Page from "./pages/visi-2030";
 import ContactPage  from "./pages/contact";
 import GpsServicePage from "./pages/gps-service";
 import AdminPage from "./pages/admin";
+import RegisterPage from "./pages/register";
 import type { Route } from "./data";
 
 function renderRoute(route: Route) {
@@ -27,6 +28,7 @@ function renderRoute(route: Route) {
     case "/investor-partners": return <InvestorPage />;
     case "/visi-2030": return <Vision2030Page />;
     case "/contact":  return <ContactPage />;
+    case "/register": return <RegisterPage />;
     case "/admin/dashboard": return <AdminPage />;
     default:          return <HomePage />;
   }
