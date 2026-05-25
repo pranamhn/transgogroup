@@ -393,7 +393,7 @@ export default function RegisterPage() {
               const parsePrice = (p?: string) => parseInt((p ?? "0").replace(/\D/g, ""), 10);
               const items = displayUnits
                 .filter((u) => u.tag === group)
-                .sort((a, b) => parsePrice(a.price) - parsePrice(b.price) || a.label.localeCompare(b.label, "id"));
+                .sort((a, b) => a.label.localeCompare(b.label, "id") || parsePrice(a.price) - parsePrice(b.price));
               if (items.length === 0) return null;
               return (
                 <div key={group} className="reg-unit-group">

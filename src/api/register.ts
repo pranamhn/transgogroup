@@ -139,14 +139,12 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
     const fullName   = hasPricing ? rawModel : [rawModel, desc].filter(Boolean).join(" ");
     const variants   = fullName.split(VARIANT_SEP).filter(Boolean);
 
+    const modelYear = String(c.vehicle_model?.year ?? "").trim();
+
     if (variants.length === 1) {
-      result.push({
-        id: c.id,
-        catalogId: c.id,
-        label: extractName(variants[0]),
-        price: extractPrice(variants[0]),
-        tag,
-      });
+      const base = extractName(variants[0]);
+      const label = modelYear && !/\b\d{4}\b/.test(base) ? `${base} ${modelYear}` : base;
+      result.push({ id: c.id, catalogId: c.id, label, price: extractPrice(variants[0]), tag });
     } else {
       /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari ll 2025 Sewa Rp 200.000/hari" */
       const firstName = extractName(variants[0]);
