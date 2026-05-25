@@ -1,19 +1,36 @@
-import { useState, useRef } from "react";
-import { CheckSquare, Square, Upload, X, ChevronDown, MapPin, Send, Loader2, ArrowLeft } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { CheckSquare, Square, Upload, X, ChevronDown, MapPin, Send, Loader2, ArrowLeft, AlertCircle } from "lucide-react";
 import { go } from "../../hooks";
+import {
+  COMPANY_ID, CHECKLIST_ID,
+  type CatalogUnit, type Pool, type ChecklistField, type CheckpointItem,
+  fetchVehicleCatalogs, fetchPools, fetchChecklistFields,
+  uploadFile, submitLead, submitChecklist,
+  sanitizePhone, guessFieldKey,
+} from "../../api/register";
 
-const UNITS = [
-  { id: "maka-cavalry",   label: "Maka Cavalry",                price: "Rp 70.000 / hari",  tag: "Motor EV" },
-  { id: "calya-2022",     label: "Toyota Calya 2022",           price: "Rp 185.000 / hari", tag: "Mobil" },
-  { id: "calya-2025",     label: "Toyota Calya 2025",           price: "Rp 200.000 / hari", tag: "Mobil" },
-  { id: "calya-2026",     label: "Toyota Calya 2026",           price: "Rp 210.000 / hari", tag: "Mobil" },
-  { id: "avanza",         label: "Toyota Avanza",               price: "Rp 200.000 / hari", tag: "Mobil" },
-  { id: "xl7",            label: "Suzuki XL 7",                 price: "Rp 240.000 / hari", tag: "Mobil" },
-  { id: "fox350-milik",   label: "Polytron Fox 350 Sewa Milik", price: "Rp 70.000 / hari",  tag: "Motor EV" },
-  { id: "sigra-2022",     label: "Daihatsu Sigra 2022",         price: "Rp 185.000 / hari", tag: "Mobil" },
-  { id: "sigra-d",        label: "Daihatsu Sigra D",            price: "Rp 170.000 / hari", tag: "Mobil" },
-  { id: "ertiga",         label: "Suzuki Ertiga",               price: "Rp 240.000 / hari", tag: "Mobil" },
-  { id: "fox-r",          label: "Polytron Fox R Sewa Reguler", price: "Rp 50.000 / hari",  tag: "Motor EV" },
+/* ── Fallback data (used when API is unavailable) ── */
+
+type DisplayUnit = CatalogUnit & { price?: string };
+
+const FALLBACK_UNITS: DisplayUnit[] = [
+  { id: "maka-cavalry",  label: "Maka Cavalry",                tag: "Motor EV", price: "Rp 70.000 / hari"  },
+  { id: "fox350-milik",  label: "Polytron Fox 350 Sewa Milik", tag: "Motor EV", price: "Rp 70.000 / hari"  },
+  { id: "fox-r",         label: "Polytron Fox R Sewa Reguler", tag: "Motor EV", price: "Rp 50.000 / hari"  },
+  { id: "calya-2022",    label: "Toyota Calya 2022",           tag: "Mobil",    price: "Rp 185.000 / hari" },
+  { id: "calya-2025",    label: "Toyota Calya 2025",           tag: "Mobil",    price: "Rp 200.000 / hari" },
+  { id: "calya-2026",    label: "Toyota Calya 2026",           tag: "Mobil",    price: "Rp 210.000 / hari" },
+  { id: "avanza",        label: "Toyota Avanza",               tag: "Mobil",    price: "Rp 200.000 / hari" },
+  { id: "xl7",           label: "Suzuki XL 7",                 tag: "Mobil",    price: "Rp 240.000 / hari" },
+  { id: "sigra-2022",    label: "Daihatsu Sigra 2022",         tag: "Mobil",    price: "Rp 185.000 / hari" },
+  { id: "sigra-d",       label: "Daihatsu Sigra D",            tag: "Mobil",    price: "Rp 170.000 / hari" },
+  { id: "ertiga",        label: "Suzuki Ertiga",               tag: "Mobil",    price: "Rp 240.000 / hari" },
+];
+
+const FALLBACK_KOTA = [
+  "Jakarta Selatan", "Jakarta Pusat", "Jakarta Barat",
+  "Jakarta Utara", "Jakarta Timur", "Bogor", "Depok",
+  "Tangerang", "Bekasi", "Bandung", "Surabaya", "Yogyakarta", "Lainnya",
 ];
 
 const APPS = [
@@ -25,24 +42,20 @@ const APPS = [
   { id: "others-mobil", label: "Lainnya — Mobil" },
 ];
 
-const KOTA = [
-  "Jakarta Selatan", "Jakarta Pusat", "Jakarta Barat",
-  "Jakarta Utara", "Jakarta Timur", "Bogor", "Depok",
-  "Tangerang", "Bekasi", "Bandung", "Surabaya", "Yogyakarta", "Lainnya",
-];
-
 const HUBUNGAN = ["Suami / Istri", "Orang Tua", "Saudara Kandung", "Teman", "Lainnya"];
 
 type UploadField = { key: string; label: string; required: boolean; hint?: string };
 
 const UPLOAD_FIELDS: UploadField[] = [
-  { key: "selfie",      label: "Foto Selfie Pemohon",                                     required: true },
-  { key: "kk",          label: "Foto KK Pemohon",                                         required: true },
-  { key: "skck",        label: "Foto SKCK atau NPWP Pemohon",                             required: true },
-  { key: "token",       label: "Bukti Kepemilikan Rumah / Token Listrik",                 required: true },
-  { key: "ktp-penjamin",label: "Foto KTP Penjamin",                                       required: false },
-  { key: "penghasilan", label: "Bukti Penghasilan Ride-hailing Terbaru",                  required: true },
-  { key: "domisili",    label: "Surat Domisili (jika tempat tinggal tidak sesuai KTP)",   required: false },
+  { key: "ktp",          label: "Foto KTP Pemohon",                                       required: true  },
+  { key: "sim",          label: "Foto SIM Pemohon",                                       required: true  },
+  { key: "selfie",       label: "Foto Selfie Pemohon",                                    required: true  },
+  { key: "kk",           label: "Foto KK Pemohon",                                        required: true  },
+  { key: "skck",         label: "Foto SKCK atau NPWP Pemohon",                            required: true  },
+  { key: "token",        label: "Bukti Kepemilikan Rumah / Token Listrik",                required: true  },
+  { key: "ktp-penjamin", label: "Foto KTP Penjamin",                                      required: false },
+  { key: "penghasilan",  label: "Bukti Penghasilan Ride-hailing Terbaru",                 required: true  },
+  { key: "domisili",     label: "Surat Domisili (jika tempat tinggal tidak sesuai KTP)",  required: false },
 ];
 
 type FormState = {
@@ -53,6 +66,8 @@ type FormState = {
   kodeRefferal: string; apps: string[];
 };
 
+/* ── Sub-components ── */
+
 function FileUploadBox({ label, required, hint, file, onChange }: {
   label: string; required: boolean; hint?: string;
   file: File | null; onChange: (f: File | null) => void;
@@ -60,9 +75,7 @@ function FileUploadBox({ label, required, hint, file, onChange }: {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div className="reg-upload-field">
-      <span className="reg-field-label">
-        {label}{required && <em>*</em>}
-      </span>
+      <span className="reg-field-label">{label}{required && <em>*</em>}</span>
       {hint && <small className="reg-field-hint">{hint}</small>}
       {file ? (
         <div className="reg-upload-preview">
@@ -114,6 +127,8 @@ function SectionHeader({ num, title, desc }: { num: string; title: React.ReactNo
   );
 }
 
+/* ── Page ── */
+
 export default function RegisterPage() {
   const [form, setForm] = useState<FormState>({
     nik: "", namaDepan: "", namaBelakang: "",
@@ -124,6 +139,32 @@ export default function RegisterPage() {
   });
   const [files, setFiles] = useState<Record<string, File | null>>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [submitStep, setSubmitStep] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  /* remote data */
+  const [catalogs, setCatalogs] = useState<DisplayUnit[]>([]);
+  const [pools, setPools]       = useState<Pool[]>([]);
+  const [checklistFields, setChecklistFields] = useState<ChecklistField[]>([]);
+  const [loadingData, setLoadingData]         = useState(true);
+
+  useEffect(() => {
+    Promise.all([fetchVehicleCatalogs(), fetchPools(), fetchChecklistFields()])
+      .then(([cats, pls, fields]) => {
+        if (cats.length > 0) setCatalogs(cats);
+        if (pls.length > 0) setPools(pls);
+        setChecklistFields(fields);
+      })
+      .catch(() => { /* silently fall back to hardcoded data */ })
+      .finally(() => setLoadingData(false));
+  }, []);
+
+  const displayUnits = catalogs.length > 0 ? catalogs : FALLBACK_UNITS;
+  const displayKota  = pools.length > 0
+    ? pools.map((p) => ({ value: p.id, label: p.name }))
+    : FALLBACK_KOTA.map((k) => ({ value: k, label: k }));
+
+  /* ── Handlers ── */
 
   const set = (key: keyof FormState) =>
     (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -138,19 +179,86 @@ export default function RegisterPage() {
   const setFile = (key: string) => (file: File | null) =>
     setFiles((prev) => ({ ...prev, [key]: file }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
     setStatus("submitting");
-    setTimeout(() => setStatus("success"), 1800);
+
+    try {
+      /* 1 ── Upload all selected files */
+      setSubmitStep("Mengunggah dokumen...");
+      const uploaded: Record<string, string> = {};
+      for (const field of UPLOAD_FIELDS) {
+        const file = files[field.key];
+        if (file) uploaded[field.key] = await uploadFile(file, "leads");
+      }
+
+      /* 2 ── Resolve IDs */
+      const pool_id = pools.find((p) => p.id === form.kota)?.id ?? null;
+      const vehicle_catalog_id = catalogs.length > 0 && form.units.length > 0
+        ? form.units[0] : null;
+
+      /* 3 ── Register lead */
+      setSubmitStep("Mendaftarkan data Anda...");
+      const lead_id = await submitLead({
+        company_id: COMPANY_ID,
+        checklist_id: CHECKLIST_ID,
+        vehicle_id: null,
+        vehicle_catalog_id,
+        pool_id,
+        identity_number: form.nik,
+        identity_file_url:    uploaded["ktp"]          ?? "",
+        licence_file_url:     uploaded["sim"]          ?? "",
+        family_card_url:      uploaded["kk"]           ?? "",
+        relatives_identity_url: uploaded["ktp-penjamin"] ?? null,
+        skck_file_url:        uploaded["skck"]         ?? "",
+        house_file_url:       uploaded["token"]        ?? "",
+        photo_selfie_url:     uploaded["selfie"]       ?? "",
+        relatives_phone:  sanitizePhone(form.teleponPenjamin),
+        relatives_name:   form.namaPenjamin,
+        relatives_status: form.hubunganPenjamin,
+        domicile_address: form.alamat,
+        whatsapp_number:  sanitizePhone(form.whatsapp),
+        phone_number:     sanitizePhone(form.telepon),
+        email:            form.email,
+        first_name:       form.namaDepan,
+        last_name:        form.namaBelakang,
+      });
+
+      /* 4 ── Submit checklist (match fields by name) */
+      if (checklistFields.length > 0) {
+        setSubmitStep("Mengirim checklist dokumen...");
+        const checkpoints: CheckpointItem[] = checklistFields
+          .map((field) => {
+            const key = guessFieldKey(field.item_name);
+            if (!key) return null;
+            if (key === "apps") {
+              if (form.apps.length === 0) return null;
+              return { company_id: COMPANY_ID, checklist_item_id: field.id, value: form.apps.join(", "), remarks: "" };
+            }
+            const url = uploaded[key];
+            if (!url) return null;
+            return { company_id: COMPANY_ID, checklist_item_id: field.id, value: url, remarks: "" };
+          })
+          .filter((c): c is CheckpointItem => c !== null);
+
+        if (checkpoints.length > 0) await submitChecklist(lead_id, checkpoints);
+      }
+
+      setStatus("success");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Terjadi kesalahan. Silakan coba lagi.");
+      setStatus("idle");
+      setSubmitStep("");
+    }
   };
 
+  /* ── Success screen ── */
   if (status === "success") {
     return (
       <div className="reg-standalone">
         <div className="reg-topbar">
-          <button className="reg-back-btn" onClick={() => go("/")}>
-            <ArrowLeft size={16} /> Kembali
-          </button>
+          <button className="reg-back-btn" onClick={() => go("/")}><ArrowLeft size={16} /> Kembali</button>
           <span className="reg-brand">TRANSGO GROUP</span>
         </div>
         <section className="reg-success">
@@ -165,18 +273,15 @@ export default function RegisterPage() {
     );
   }
 
+  /* ── Form ── */
   return (
     <div className="reg-standalone">
 
-      {/* ── Minimal topbar ── */}
       <div className="reg-topbar">
-        <button className="reg-back-btn" onClick={() => go("/")}>
-          <ArrowLeft size={16} /> Beranda
-        </button>
+        <button className="reg-back-btn" onClick={() => go("/")}><ArrowLeft size={16} /> Beranda</button>
         <span className="reg-brand">TRANSGO GROUP</span>
       </div>
 
-      {/* ── Hero ── */}
       <div className="reg-hero">
         <div className="reg-hero-inner">
           <span className="reg-kicker">Driver Registration</span>
@@ -189,7 +294,6 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* ── Form ── */}
       <form className="reg-form" onSubmit={handleSubmit} noValidate>
 
         {/* 01 Data Pribadi */}
@@ -228,8 +332,8 @@ export default function RegisterPage() {
               <label className="reg-field-label">Kota / Cabang<em>*</em></label>
               <div className="reg-select-wrap">
                 <select className="reg-select" value={form.kota} onChange={set("kota")} required>
-                  <option value="">Pilih kota / cabang</option>
-                  {KOTA.map((k) => <option key={k} value={k}>{k}</option>)}
+                  <option value="">{loadingData ? "Memuat cabang..." : "Pilih kota / cabang"}</option>
+                  {displayKota.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
                 </select>
                 <ChevronDown size={16} className="reg-select-icon" />
               </div>
@@ -240,26 +344,34 @@ export default function RegisterPage() {
         {/* 02 Unit */}
         <div className="reg-section">
           <SectionHeader num="02" title={<>Unit yang akan Disewa<em>*</em></>} desc="Pilih satu atau lebih unit kendaraan yang ingin Anda sewa." />
-          {(["Motor EV", "Mobil"] as const).map((group) => (
-            <div key={group} className="reg-unit-group">
-              <div className="reg-unit-group-label">{group}</div>
-              <div className="reg-unit-list">
-                {UNITS.filter((u) => u.tag === group).map((u) => {
-                  const checked = form.units.includes(u.id);
-                  return (
-                    <label key={u.id} className={`reg-unit-row${checked ? " reg-unit-row--on" : ""}`}>
-                      <span className="reg-unit-row-check">
-                        {checked ? <CheckSquare size={17} /> : <Square size={17} />}
-                      </span>
-                      <span className="reg-unit-name">{u.label}</span>
-                      <span className="reg-unit-price">{u.price}</span>
-                      <input type="checkbox" checked={checked} onChange={() => toggleList("units", u.id)} className="reg-hidden" />
-                    </label>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
+          {loadingData ? (
+            <div className="reg-loading-row"><Loader2 size={16} className="reg-spin" /> Memuat daftar unit...</div>
+          ) : (
+            (["Motor EV", "Mobil"] as const).map((group) => {
+              const items = displayUnits.filter((u) => u.tag === group);
+              if (items.length === 0) return null;
+              return (
+                <div key={group} className="reg-unit-group">
+                  <div className="reg-unit-group-label">{group}</div>
+                  <div className="reg-unit-list">
+                    {items.map((u) => {
+                      const checked = form.units.includes(u.id);
+                      return (
+                        <label key={u.id} className={`reg-unit-row${checked ? " reg-unit-row--on" : ""}`}>
+                          <span className="reg-unit-row-check">
+                            {checked ? <CheckSquare size={17} /> : <Square size={17} />}
+                          </span>
+                          <span className="reg-unit-name">{u.label}</span>
+                          {u.price && <span className="reg-unit-price">{u.price}</span>}
+                          <input type="checkbox" checked={checked} onChange={() => toggleList("units", u.id)} className="reg-hidden" />
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
 
         {/* 03 Penjamin */}
@@ -326,10 +438,16 @@ export default function RegisterPage() {
 
         {/* Submit */}
         <div className="reg-submit-row">
+          {error && (
+            <div className="reg-error">
+              <AlertCircle size={16} />
+              <span>{error}</span>
+            </div>
+          )}
           <p className="reg-submit-note">Dengan mengirimkan form ini, Anda menyetujui syarat dan ketentuan sewa kendaraan Transgo Fleet.</p>
           <button type="submit" className="reg-submit-btn" disabled={status === "submitting"}>
             {status === "submitting"
-              ? <><Loader2 size={18} className="reg-spin" /> Mengirim...</>
+              ? <><Loader2 size={18} className="reg-spin" /> {submitStep || "Mengirim..."}</>
               : <><Send size={18} /> Submit Pendaftaran</>
             }
           </button>

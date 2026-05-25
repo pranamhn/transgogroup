@@ -5984,6 +5984,21 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .reg-upload-preview span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
 .reg-upload-preview button { background: none; border: none; cursor: pointer; color: var(--blue); display: flex; flex-shrink: 0; }
 
+/* ── Loading / Error ── */
+.reg-loading-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 0.82rem; color: var(--muted); padding: 12px 2px;
+}
+.reg-error {
+  display: flex; align-items: flex-start; gap: 8px;
+  background: #fff1f1; border: 1.5px solid #fca5a5;
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 0.82rem; color: #b91c1c;
+  width: 100%; max-width: 340px; box-sizing: border-box;
+  line-height: 1.5;
+}
+.reg-error svg { flex-shrink: 0; margin-top: 1px; }
+
 /* ── Submit ── */
 .reg-submit-row { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 8px 0; }
 .reg-submit-note { font-size: 0.76rem; color: var(--muted); text-align: center; max-width: 480px; margin: 0; line-height: 1.5; }
