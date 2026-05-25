@@ -178,7 +178,8 @@ export default function RegisterPage() {
     (f) => guessFieldKey(f.item_name) === null
   );
 
-  const displayUnits = catalogs.length > 0 ? catalogs : FALLBACK_UNITS;
+  const displayUnits = (catalogs.length > 0 ? catalogs : FALLBACK_UNITS)
+    .filter((u) => !/charger/i.test(u.label));
   const displayKota  = pools.length > 0
     ? pools.map((p) => ({ value: p.id, label: p.name }))
     : FALLBACK_KOTA.map((k) => ({ value: k, label: k }));
