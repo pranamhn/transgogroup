@@ -256,8 +256,9 @@ export async function submitLead(payload: LeadPayload): Promise<string> {
     body: JSON.stringify(payload),
   });
   const json = await res.json();
-  if (json.status !== "success") throw new Error(json.message ?? "Gagal mendaftarkan profil");
-  return json.data.id as string;
+  const id = json.data?.id ?? json.data?.lead_id;
+  if (!id) throw new Error(json.message ?? "Gagal mendaftarkan profil");
+  return id as string;
 }
 
 export async function submitChecklist(
@@ -283,5 +284,5 @@ export async function submitChecklist(
     }),
   });
   const json = await res.json();
-  if (json.status !== "success") throw new Error(json.message ?? "Gagal submit checklist");
+  if (!res.ok && json.status !== "success") throw new Error(json.message ?? "Gagal submit checklist");
 }
