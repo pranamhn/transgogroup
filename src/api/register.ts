@@ -117,7 +117,7 @@ const VARIANT_SEP = /\s*(?:\|\||ll)\s*/;
 /* Forced year override when API doesn't return a year for a known vehicle.
    priceRe narrows matches when the same model has multiple year variants. */
 const YEAR_OVERRIDE: Array<[nameRe: RegExp, priceRe: RegExp | null, year: string]> = [
-  [/avanza/i,    /200/,  "2021"],
+  [/avanza/i,    /210/,  "2021"],
   [/avanza/i,    /225/,  "2024"],
   [/sigra\s*d/i, null,   "2025"],
   [/ertiga/i,    null,   "2023"],
