@@ -75,6 +75,7 @@ export function guessFieldKey(itemName: string): string | null {
   if (n.includes("penghasilan") || n.includes("income")) return "penghasilan";
   if (n.includes("domisili")) return "domisili";
   if (n.includes("ride") || n.includes("aplikasi") || n.includes("platform")) return "apps";
+  if (n.includes("referral") || n.includes("refferal") || n.includes("referal") || n.includes("kode ref")) return "referral";
   return null;
 }
 
