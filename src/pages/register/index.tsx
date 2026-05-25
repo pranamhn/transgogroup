@@ -11,20 +11,20 @@ import {
 
 /* ── Fallback data (used when API is unavailable) ── */
 
-type DisplayUnit = CatalogUnit & { price?: string };
+type DisplayUnit = CatalogUnit; /* CatalogUnit already has price? and catalogId */
 
 const FALLBACK_UNITS: DisplayUnit[] = [
-  { id: "maka-cavalry",  label: "Maka Cavalry",                tag: "Motor EV", price: "Rp 70.000 / hari"  },
-  { id: "fox350-milik",  label: "Polytron Fox 350 Sewa Milik", tag: "Motor EV", price: "Rp 70.000 / hari"  },
-  { id: "fox-r",         label: "Polytron Fox R Sewa Reguler", tag: "Motor EV", price: "Rp 50.000 / hari"  },
-  { id: "calya-2022",    label: "Toyota Calya 2022",           tag: "Mobil",    price: "Rp 185.000 / hari" },
-  { id: "calya-2025",    label: "Toyota Calya 2025",           tag: "Mobil",    price: "Rp 200.000 / hari" },
-  { id: "calya-2026",    label: "Toyota Calya 2026",           tag: "Mobil",    price: "Rp 210.000 / hari" },
-  { id: "avanza",        label: "Toyota Avanza",               tag: "Mobil",    price: "Rp 200.000 / hari" },
-  { id: "xl7",           label: "Suzuki XL 7",                 tag: "Mobil",    price: "Rp 240.000 / hari" },
-  { id: "sigra-2022",    label: "Daihatsu Sigra 2022",         tag: "Mobil",    price: "Rp 185.000 / hari" },
-  { id: "sigra-d",       label: "Daihatsu Sigra D",            tag: "Mobil",    price: "Rp 170.000 / hari" },
-  { id: "ertiga",        label: "Suzuki Ertiga",               tag: "Mobil",    price: "Rp 240.000 / hari" },
+  { id: "maka-cavalry",  catalogId: "maka-cavalry",  label: "Maka Cavalry",                tag: "Motor EV", price: "Rp 70.000 / hari"  },
+  { id: "fox350-milik",  catalogId: "fox350-milik",  label: "Polytron Fox 350 Sewa Milik", tag: "Motor EV", price: "Rp 70.000 / hari"  },
+  { id: "fox-r",         catalogId: "fox-r",         label: "Polytron Fox R Sewa Reguler", tag: "Motor EV", price: "Rp 50.000 / hari"  },
+  { id: "calya-2022",    catalogId: "calya-2022",    label: "Toyota Calya 2022",           tag: "Mobil",    price: "Rp 185.000 / hari" },
+  { id: "calya-2025",    catalogId: "calya-2025",    label: "Toyota Calya 2025",           tag: "Mobil",    price: "Rp 200.000 / hari" },
+  { id: "calya-2026",    catalogId: "calya-2026",    label: "Toyota Calya 2026",           tag: "Mobil",    price: "Rp 210.000 / hari" },
+  { id: "avanza",        catalogId: "avanza",        label: "Toyota Avanza",               tag: "Mobil",    price: "Rp 200.000 / hari" },
+  { id: "xl7",           catalogId: "xl7",           label: "Suzuki XL 7",                 tag: "Mobil",    price: "Rp 240.000 / hari" },
+  { id: "sigra-2022",    catalogId: "sigra-2022",    label: "Daihatsu Sigra 2022",         tag: "Mobil",    price: "Rp 185.000 / hari" },
+  { id: "sigra-d",       catalogId: "sigra-d",       label: "Daihatsu Sigra D",            tag: "Mobil",    price: "Rp 170.000 / hari" },
+  { id: "ertiga",        catalogId: "ertiga",        label: "Suzuki Ertiga",               tag: "Mobil",    price: "Rp 240.000 / hari" },
 ];
 
 const FALLBACK_KOTA = [
@@ -214,7 +214,8 @@ export default function RegisterPage() {
       /* 2 ── Resolve IDs */
       const pool_id = pools.find((p) => p.id === form.kota)?.id ?? null;
       const vehicle_catalog_id = catalogs.length > 0 && form.units.length > 0
-        ? form.units[0] : null;
+        ? (displayUnits.find((u) => u.id === form.units[0])?.catalogId ?? null)
+        : null;
 
       /* 3 ── Register lead */
       setSubmitStep("Mendaftarkan data Anda...");

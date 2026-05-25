@@ -7,8 +7,10 @@ export const CHECKLIST_ID = "e959b837-ee3e-437f-bb91-1d41af5a4830";
 /* ── Types ── */
 
 export type CatalogUnit = {
-  id: string;
+  id: string;        // unique form ID (may be "catalogId_i" for multi-year variants)
+  catalogId: string; // real API catalog ID used for submit
   label: string;
+  price?: string;
   tag: "Motor EV" | "Mobil";
 };
 
@@ -90,25 +92,74 @@ async function fileToBase64(file: File): Promise<string> {
 
 /* ── API Functions ── */
 
+/* Extract "Rp X.XXX / hari" from a raw string */
+function extractPrice(s: string): string {
+  return (s.match(/Rp\s*[\d.,]+\s*\/\s*hari/i) ?? [])[0]?.trim() ?? "";
+}
+
+/* Remove price suffix and leading junk, return clean vehicle name */
+function extractName(s: string): string {
+  return s
+    .replace(/\s*Biaya\s+Sewa\s+Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
+    .replace(/\s*Sewa\s+Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
+    .replace(/\s*Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
+    .trim();
+}
+
 export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
   const res = await fetch(
     `${GATEWAY}/service_vehicle/vehicle-catalogs/?page=1&pageSize=100&company_id=${COMPANY_ID}`
   );
   const json = await res.json();
   if (json.status !== "success") return [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (json.data ?? []).map((c: any): CatalogUnit => {
+
+  const result: CatalogUnit[] = [];
+
+  for (const c of json.data ?? []) { // eslint-disable-line @typescript-eslint/no-explicit-any
     const fuel = (c.vehicle_model?.fuel_type ?? "").toLowerCase();
     const type = (c.vehicle_model?.type ?? "").toLowerCase();
     const isMotor =
       ["listrik", "electric", "ev"].some((k) => fuel.includes(k)) ||
       ["motor", "motorcycle", "scooter"].some((k) => type.includes(k));
-    return {
-      id: c.id,
-      label: `${c.vehicle_model?.vehicle_brand?.name ?? ""} ${c.vehicle_model?.name ?? ""}`.trim(),
-      tag: isMotor ? "Motor EV" : "Mobil",
-    };
-  });
+    const tag: "Motor EV" | "Mobil" = isMotor ? "Motor EV" : "Mobil";
+
+    const fullName = `${c.vehicle_model?.vehicle_brand?.name ?? ""} ${c.vehicle_model?.name ?? ""}`.trim();
+    const variants = fullName.split(/\s*\|\|\s*/);
+
+    if (variants.length === 1) {
+      result.push({
+        id: c.id,
+        catalogId: c.id,
+        label: extractName(variants[0]),
+        price: extractPrice(variants[0]),
+        tag,
+      });
+    } else {
+      /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari || 2025 Sewa Rp 200.000/hari" */
+      const firstName = extractName(variants[0]);
+      /* base name = first name without trailing 4-digit year */
+      const baseName  = firstName.replace(/\s+\d{4}$/, "").trim();
+
+      variants.forEach((v, i) => {
+        let label: string;
+        if (i === 0) {
+          label = firstName;
+        } else {
+          const yearMatch = v.match(/^\s*(\d{4})/);
+          label = yearMatch ? `${baseName} ${yearMatch[1]}` : extractName(v);
+        }
+        result.push({
+          id: `${c.id}_${i}`,
+          catalogId: c.id,
+          label,
+          price: extractPrice(v),
+          tag,
+        });
+      });
+    }
+  }
+
+  return result;
 }
 
 export async function fetchPools(): Promise<Pool[]> {
