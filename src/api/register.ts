@@ -92,19 +92,27 @@ async function fileToBase64(file: File): Promise<string> {
 
 /* ── API Functions ── */
 
-/* Extract "Rp X.XXX / hari" from a raw string */
+/* Price pattern: "Rp X.XXX / hari" or plain "X.XXX / hari" */
+const PRICE_RE    = /(?:Rp\s*)?([\d.,]+)\s*\/\s*hari/i;
+const PRICE_FULL  = /Rp\s*[\d.,]+\s*\/\s*hari/i;
+
 function extractPrice(s: string): string {
-  return (s.match(/Rp\s*[\d.,]+\s*\/\s*hari/i) ?? [])[0]?.trim() ?? "";
+  const full = s.match(PRICE_FULL);
+  if (full) return full[0].trim();
+  const plain = s.match(PRICE_RE);
+  return plain ? `Rp ${plain[1]} / hari` : "";
 }
 
-/* Remove price suffix and leading junk, return clean vehicle name */
 function extractName(s: string): string {
-  return s
-    .replace(/\s*Biaya\s+Sewa\s+Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
-    .replace(/\s*Sewa\s+Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
-    .replace(/\s*Rp\s*[\d.,]+\s*\/\s*hari/gi, "")
-    .trim();
+  /* Remove "Biaya Sewa [Rp] X.XXX / hari" — car price prefix */
+  let name = s.replace(/\s*Biaya\s+Sewa\s+(?:Rp\s*)?[\d.,]+\s*\/\s*hari/gi, "");
+  /* Remove trailing " Rp X.XXX / hari" — EV price suffix */
+  name = name.replace(/\s+Rp\s*[\d.,]+\s*\/\s*hari/gi, "");
+  return name.trim();
 }
+
+/* API uses "ll" (two lowercase L) as the year-variant separator */
+const VARIANT_SEP = /\s*(?:\|\||ll)\s*/;
 
 export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
   const res = await fetch(
@@ -124,7 +132,7 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
     const tag: "Motor EV" | "Mobil" = isMotor ? "Motor EV" : "Mobil";
 
     const fullName = `${c.vehicle_model?.vehicle_brand?.name ?? ""} ${c.vehicle_model?.name ?? ""}`.trim();
-    const variants = fullName.split(/\s*\|\|\s*/);
+    const variants = fullName.split(VARIANT_SEP).filter(Boolean);
 
     if (variants.length === 1) {
       result.push({
@@ -135,9 +143,8 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
         tag,
       });
     } else {
-      /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari || 2025 Sewa Rp 200.000/hari" */
+      /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari ll 2025 Sewa Rp 200.000/hari" */
       const firstName = extractName(variants[0]);
-      /* base name = first name without trailing 4-digit year */
       const baseName  = firstName.replace(/\s+\d{4}$/, "").trim();
 
       variants.forEach((v, i) => {
