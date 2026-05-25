@@ -200,7 +200,7 @@ export async function fetchPools(): Promise<Pool[]> {
   const json = await res.json();
   if (json.status !== "success") return [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (json.data ?? []).map((p: any): Pool => ({ id: p.id, name: p.name }));
+  return (json.data ?? []).map((p: any): Pool => ({ id: p.id, name: p.pool_name }));
 }
 
 export async function fetchChecklistFields(): Promise<ChecklistField[]> {

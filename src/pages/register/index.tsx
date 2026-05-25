@@ -51,7 +51,7 @@ const UPLOAD_FIELDS: UploadField[] = [
   { key: "selfie",       label: "Foto Selfie Pemohon",                                    required: true  },
   { key: "kk",           label: "Foto KK Pemohon",                                        required: true  },
   { key: "skck",         label: "Foto SKCK atau NPWP Pemohon",                            required: true  },
-  { key: "token",        label: "Bukti Kepemilikan Rumah / Token Listrik",                required: true  },
+  { key: "token",        label: "Foto Tampak Depan Rumah / Bukti Kepemilikan / Token Listrik", required: true  },
   { key: "ktp-penjamin", label: "Foto KTP Penjamin",                                      required: false },
   { key: "penghasilan",  label: "Bukti Penghasilan Ride-hailing Terbaru",                 required: true  },
   { key: "domisili",     label: "Surat Domisili (jika tempat tinggal tidak sesuai KTP)",  required: false },
