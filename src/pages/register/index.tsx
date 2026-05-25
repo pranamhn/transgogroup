@@ -33,12 +33,12 @@ const FALLBACK_KOTA = [
 ];
 
 const APPS = [
-  { id: "gojek-gocar",  label: "Gojek — Gocar" },
-  { id: "gojek-goride", label: "Gojek — GoRide" },
-  { id: "grab-car",     label: "Grab — GrabCar" },
-  { id: "grab-ride",    label: "Grab — GrabRide" },
-  { id: "others-motor", label: "Lainnya — Motor" },
-  { id: "others-mobil", label: "Lainnya — Mobil" },
+  { id: "Gojek | Gocar",  label: "Gojek — Gocar"   },
+  { id: "Gojek | Goride", label: "Gojek — GoRide"  },
+  { id: "Grab | Grab Car",  label: "Grab — GrabCar"  },
+  { id: "Grab | Grab Ride", label: "Grab — GrabRide" },
+  { id: "Others | Motor", label: "Lainnya — Motor"  },
+  { id: "Others | Mobil", label: "Lainnya — Mobil"  },
 ];
 
 const HUBUNGAN = ["Suami / Istri", "Orang Tua", "Saudara Kandung", "Teman", "Lainnya"];
@@ -282,7 +282,7 @@ export default function RegisterPage() {
           checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value, remarks });
         }
 
-        if (checkpoints.length > 0) await submitChecklist(lead_id, checkpoints);
+        await submitChecklist(lead_id, checkpoints);
       }
 
       setStatus("success");
