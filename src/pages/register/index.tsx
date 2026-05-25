@@ -29,9 +29,7 @@ const FALLBACK_UNITS: DisplayUnit[] = [
 ];
 
 const FALLBACK_KOTA = [
-  "Jakarta Selatan", "Jakarta Pusat", "Jakarta Barat",
-  "Jakarta Utara", "Jakarta Timur", "Bogor", "Depok",
-  "Tangerang", "Bekasi", "Bandung", "Surabaya", "Yogyakarta", "Lainnya",
+  "Jakarta Selatan - Gatot Subroto",
 ];
 
 const APPS = [
