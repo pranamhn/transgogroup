@@ -386,7 +386,9 @@ export default function RegisterPage() {
             <div className="reg-loading-row"><Loader2 size={16} className="reg-spin" /> Memuat daftar unit...</div>
           ) : (
             (["Motor EV", "Mobil"] as const).map((group) => {
-              const items = displayUnits.filter((u) => u.tag === group);
+              const items = displayUnits
+                .filter((u) => u.tag === group)
+                .sort((a, b) => a.label.localeCompare(b.label, "id"));
               if (items.length === 0) return null;
               return (
                 <div key={group} className="reg-unit-group">
