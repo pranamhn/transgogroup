@@ -5923,6 +5923,12 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .reg-select-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
 
 /* ── Unit list ── */
+.reg-unit-group { display: flex; flex-direction: column; gap: 6px; }
+.reg-unit-group + .reg-unit-group { margin-top: 14px; }
+.reg-unit-group-label {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--muted); padding: 0 2px;
+}
 .reg-unit-list { display: flex; flex-direction: column; gap: 0; border: 1.5px solid var(--line); border-radius: 12px; overflow: hidden; }
 .reg-unit-row {
   display: flex; align-items: center; gap: 12px;

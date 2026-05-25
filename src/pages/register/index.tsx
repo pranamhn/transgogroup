@@ -240,22 +240,26 @@ export default function RegisterPage() {
         {/* 02 Unit */}
         <div className="reg-section">
           <SectionHeader num="02" title={<>Unit yang akan Disewa<em>*</em></>} desc="Pilih satu atau lebih unit kendaraan yang ingin Anda sewa." />
-          <div className="reg-unit-list">
-            {UNITS.map((u) => {
-              const checked = form.units.includes(u.id);
-              return (
-                <label key={u.id} className={`reg-unit-row${checked ? " reg-unit-row--on" : ""}`}>
-                  <span className="reg-unit-row-check">
-                    {checked ? <CheckSquare size={17} /> : <Square size={17} />}
-                  </span>
-                  <span className="reg-unit-tag">{u.tag}</span>
-                  <span className="reg-unit-name">{u.label}</span>
-                  <span className="reg-unit-price">{u.price}</span>
-                  <input type="checkbox" checked={checked} onChange={() => toggleList("units", u.id)} className="reg-hidden" />
-                </label>
-              );
-            })}
-          </div>
+          {(["Motor EV", "Mobil"] as const).map((group) => (
+            <div key={group} className="reg-unit-group">
+              <div className="reg-unit-group-label">{group}</div>
+              <div className="reg-unit-list">
+                {UNITS.filter((u) => u.tag === group).map((u) => {
+                  const checked = form.units.includes(u.id);
+                  return (
+                    <label key={u.id} className={`reg-unit-row${checked ? " reg-unit-row--on" : ""}`}>
+                      <span className="reg-unit-row-check">
+                        {checked ? <CheckSquare size={17} /> : <Square size={17} />}
+                      </span>
+                      <span className="reg-unit-name">{u.label}</span>
+                      <span className="reg-unit-price">{u.price}</span>
+                      <input type="checkbox" checked={checked} onChange={() => toggleList("units", u.id)} className="reg-hidden" />
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* 03 Penjamin */}
