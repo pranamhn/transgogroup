@@ -72,7 +72,7 @@ export function guessFieldKey(itemName: string): string | null {
   if (n.includes("selfie") || (n.includes("foto") && n.includes("diri"))) return "selfie";
   if (n.includes("kk") || n.includes("kartu keluarga")) return "kk";
   if (n.includes("skck") || n.includes("npwp")) return "skck";
-  if (n.includes("token") || n.includes("listrik") || n.includes("kepemilikan")) return "token";
+  if (n.includes("token") || n.includes("listrik") || n.includes("kepemilikan") || n.includes("rumah") || n.includes("tampak")) return "token";
   if (n.includes("penjamin") || n.includes("penanggung")) return "ktp-penjamin";
   if (n.includes("penghasilan") || n.includes("income")) return "penghasilan";
   if (n.includes("domisili")) return "domisili";
@@ -131,8 +131,13 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
       ["motor", "motorcycle", "scooter"].some((k) => type.includes(k));
     const tag: "Motor EV" | "Mobil" = isMotor ? "Motor EV" : "Mobil";
 
-    const fullName = `${c.vehicle_model?.vehicle_brand?.name ?? ""} ${c.vehicle_model?.name ?? ""}`.trim();
-    const variants = fullName.split(VARIANT_SEP).filter(Boolean);
+    const rawModel = `${c.vehicle_model?.vehicle_brand?.name ?? ""} ${c.vehicle_model?.name ?? ""}`.trim();
+    const desc     = (c.description ?? "").trim();
+    /* If model name already embeds pricing, use it as-is.
+       Otherwise append description (which may contain rental type + price). */
+    const hasPricing = PRICE_RE.test(rawModel) || /biaya\s+sewa/i.test(rawModel);
+    const fullName   = hasPricing ? rawModel : [rawModel, desc].filter(Boolean).join(" ");
+    const variants   = fullName.split(VARIANT_SEP).filter(Boolean);
 
     if (variants.length === 1) {
       result.push({

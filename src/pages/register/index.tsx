@@ -264,6 +264,8 @@ export default function RegisterPage() {
           if (key === "apps") {
             if (form.apps.length === 0) continue;
             checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value: form.apps.join(", "), remarks: "" });
+          } else if (key === "referral") {
+            if (form.kodeRefferal) checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value: form.kodeRefferal, remarks: "" });
           } else {
             const url = uploaded[key];
             if (url) checkpoints.push({ company_id: COMPANY_ID, checklist_item_id: field.id, value: url, remarks: "" });
