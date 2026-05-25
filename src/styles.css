@@ -5899,6 +5899,8 @@ button { font: inherit; background: none; border: none; cursor: pointer; }
 .reg-field-label { font-size: 0.8rem; font-weight: 600; color: var(--ink); }
 .reg-field-label em { color: var(--blue); font-style: normal; margin-left: 1px; }
 .reg-field-hint { font-size: 0.71rem; color: var(--muted); }
+.reg-field-note { font-size: 0.76rem; color: var(--muted); margin: 0; line-height: 1.5; }
+.reg-field-note strong { color: var(--blue); font-weight: 700; }
 
 /* ── Input ── */
 .reg-input {

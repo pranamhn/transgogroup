@@ -305,7 +305,8 @@ export default function RegisterPage() {
           <div className="reg-fields">
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Kode Referral</label>
-              <input className="reg-input" type="text" placeholder="Masukkan kode referral (jika ada)" value={form.kodeRefferal} onChange={set("kodeRefferal")} />
+              <input className="reg-input" type="text" placeholder="Masukkan kode referral" value={form.kodeRefferal} onChange={set("kodeRefferal")} />
+              <p className="reg-field-note">Jika tidak ada referral, tulis <strong>TRANSGO</strong></p>
             </div>
           </div>
         </div>
