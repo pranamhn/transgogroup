@@ -114,6 +114,22 @@ function extractName(s: string): string {
 /* API uses "ll" (two lowercase L) as the year-variant separator */
 const VARIANT_SEP = /\s*(?:\|\||ll)\s*/;
 
+/* Forced year override when API doesn't return a year for a known vehicle */
+const YEAR_OVERRIDE: Array<[RegExp, string]> = [
+  [/avanza/i,  "2024"],
+  [/sigra\s*d/i, "2025"],
+  [/ertiga/i,  "2023"],
+  [/xl\s*7/i,  "2024"],
+];
+
+function forceYear(label: string): string {
+  if (/\b\d{4}\b/.test(label)) return label;
+  for (const [re, yr] of YEAR_OVERRIDE) {
+    if (re.test(label)) return `${label} ${yr}`;
+  }
+  return label;
+}
+
 export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
   const res = await fetch(
     `${GATEWAY}/service_vehicle/vehicle-catalogs/?page=1&pageSize=100&company_id=${COMPANY_ID}`
@@ -123,7 +139,6 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
 
   const result: CatalogUnit[] = [];
 
-  if (json.data?.[0]) console.log("[catalog sample]", JSON.stringify(json.data[0].vehicle_model, null, 2));
   for (const c of json.data ?? []) { // eslint-disable-line @typescript-eslint/no-explicit-any
     const fuel = (c.vehicle_model?.fuel_type ?? "").toLowerCase();
     const type = (c.vehicle_model?.type ?? "").toLowerCase();
@@ -150,7 +165,8 @@ export async function fetchVehicleCatalogs(): Promise<CatalogUnit[]> {
 
     if (variants.length === 1) {
       const base = extractName(variants[0]);
-      const label = modelYear && !/\b\d{4}\b/.test(base) ? `${base} ${modelYear}` : base;
+      const withApiYear = modelYear && !/\b\d{4}\b/.test(base) ? `${base} ${modelYear}` : base;
+      const label = forceYear(withApiYear);
       result.push({ id: c.id, catalogId: c.id, label, price: extractPrice(variants[0]), tag });
     } else {
       /* e.g. "Toyota Calya 2022 Biaya Sewa Rp 185.000/hari ll 2025 Sewa Rp 200.000/hari" */
