@@ -286,6 +286,7 @@ export default function RegisterPage() {
       }
 
       setStatus("success");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Terjadi kesalahan. Silakan coba lagi.");
       setStatus("idle");
