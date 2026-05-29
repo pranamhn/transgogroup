@@ -67,14 +67,14 @@ type FormState = {
 
 /* ── Sub-components ── */
 
-function FileUploadBox({ label, required, hint, file, onChange }: {
+function FileUploadBox({ label, required, hint, file, onChange, error }: {
   label: string; required: boolean; hint?: string;
-  file: File | null; onChange: (f: File | null) => void;
+  file: File | null; onChange: (f: File | null) => void; error?: string;
 }) {
   const ref = useRef<HTMLInputElement>(null);
   return (
     <div className="reg-upload-field">
-      <span className="reg-field-label">{label}{required && <em>*</em>}</span>
+      {label && <span className="reg-field-label">{label}{required && <em>*</em>}</span>}
       {hint && <small className="reg-field-hint">{hint}</small>}
       {file ? (
         <div className="reg-upload-preview">
@@ -82,12 +82,13 @@ function FileUploadBox({ label, required, hint, file, onChange }: {
           <button type="button" onClick={() => onChange(null)}><X size={14} /></button>
         </div>
       ) : (
-        <div className="reg-upload-box" onClick={() => ref.current?.click()}>
+        <div className={`reg-upload-box${error ? " reg-upload-box--error" : ""}`} onClick={() => ref.current?.click()}>
           <Upload size={20} />
           <strong>Tap untuk Upload</strong>
           <small>JPG, PNG, PDF · maks 3 MB</small>
         </div>
       )}
+      {error && <span className="reg-field-error">{error}</span>}
       <input
         ref={ref} type="file" accept="image/*,application/pdf" className="reg-hidden"
         onChange={(e) => {
@@ -140,6 +141,7 @@ export default function RegisterPage() {
   const [status, setStatus] = useState<"idle" | "submitting" | "success">("idle");
   const [submitStep, setSubmitStep] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   /* remote data */
   const [catalogs, setCatalogs] = useState<DisplayUnit[]>([]);
@@ -197,9 +199,42 @@ export default function RegisterPage() {
   const setFile = (key: string) => (file: File | null) =>
     setFiles((prev) => ({ ...prev, [key]: file }));
 
+  const validate = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!form.nik.trim()) errs.nik = "Nomor NIK wajib diisi";
+    else if (form.nik.replace(/\D/g, "").length !== 16) errs.nik = "NIK harus 16 digit";
+    if (!form.namaDepan.trim()) errs.namaDepan = "Nama depan wajib diisi";
+    if (!form.telepon || form.telepon === "62") errs.telepon = "Nomor telepon wajib diisi";
+    if (!form.whatsapp || form.whatsapp === "62") errs.whatsapp = "Nomor WhatsApp wajib diisi";
+    if (!form.email.trim()) errs.email = "Alamat email wajib diisi";
+    if (!form.alamat.trim()) errs.alamat = "Alamat domisili wajib diisi";
+    if (!form.kota) errs.kota = "Kota / Cabang wajib dipilih";
+    if (form.units.length === 0) errs.units = "Pilih minimal satu unit kendaraan";
+    if (!form.namaPenjamin.trim()) errs.namaPenjamin = "Nama penjamin wajib diisi";
+    if (!form.hubunganPenjamin) errs.hubunganPenjamin = "Hubungan dengan penjamin wajib dipilih";
+    if (!form.teleponPenjamin || form.teleponPenjamin === "62") errs.teleponPenjamin = "Nomor telepon penjamin wajib diisi";
+    if (form.apps.length === 0) errs.apps = "Pilih minimal satu aplikasi ride-hailing";
+    for (const field of UPLOAD_FIELDS) {
+      if (field.required && !files[field.key]) errs[`file_${field.key}`] = "Dokumen ini wajib diupload";
+    }
+    return errs;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    const errs = validate();
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      setTimeout(() => {
+        document.querySelector<HTMLElement>(".reg-field-error, .reg-upload-box--error")
+          ?.closest(".reg-field, .reg-upload-field, .reg-section")
+          ?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }, 50);
+      return;
+    }
+    setFieldErrors({});
     setStatus("submitting");
 
     try {
@@ -343,11 +378,13 @@ export default function RegisterPage() {
           <div className="reg-fields">
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Nomor NIK<em>*</em></label>
-              <input className="reg-input" type="text" inputMode="numeric" placeholder="16 digit nomor NIK" value={form.nik} onChange={set("nik")} required />
+              <input className={`reg-input${fieldErrors.nik ? " reg-input--error" : ""}`} type="text" inputMode="numeric" placeholder="16 digit nomor NIK" value={form.nik} onChange={set("nik")} />
+              {fieldErrors.nik && <span className="reg-field-error">{fieldErrors.nik}</span>}
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Nama Depan<em>*</em></label>
-              <input className="reg-input" type="text" placeholder="Nama depan" value={form.namaDepan} onChange={set("namaDepan")} required />
+              <input className={`reg-input${fieldErrors.namaDepan ? " reg-input--error" : ""}`} type="text" placeholder="Nama depan" value={form.namaDepan} onChange={set("namaDepan")} />
+              {fieldErrors.namaDepan && <span className="reg-field-error">{fieldErrors.namaDepan}</span>}
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Nama Belakang</label>
@@ -355,29 +392,34 @@ export default function RegisterPage() {
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Nomor Telepon<em>*</em></label>
-              <input className="reg-input" type="tel" placeholder="628xxxxxxxxx" value={form.telepon} onChange={set("telepon")} required />
+              <input className={`reg-input${fieldErrors.telepon ? " reg-input--error" : ""}`} type="tel" placeholder="628xxxxxxxxx" value={form.telepon} onChange={set("telepon")} />
+              {fieldErrors.telepon && <span className="reg-field-error">{fieldErrors.telepon}</span>}
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Nomor WhatsApp<em>*</em></label>
-              <input className="reg-input" type="tel" placeholder="628xxxxxxxxx" value={form.whatsapp} onChange={set("whatsapp")} required />
+              <input className={`reg-input${fieldErrors.whatsapp ? " reg-input--error" : ""}`} type="tel" placeholder="628xxxxxxxxx" value={form.whatsapp} onChange={set("whatsapp")} />
+              {fieldErrors.whatsapp && <span className="reg-field-error">{fieldErrors.whatsapp}</span>}
             </div>
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Alamat Email<em>*</em></label>
-              <input className="reg-input" type="email" placeholder="Alamat email aktif" value={form.email} onChange={set("email")} required />
+              <input className={`reg-input${fieldErrors.email ? " reg-input--error" : ""}`} type="email" placeholder="Alamat email aktif" value={form.email} onChange={set("email")} />
+              {fieldErrors.email && <span className="reg-field-error">{fieldErrors.email}</span>}
             </div>
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Alamat Domisili<em>*</em></label>
-              <input className="reg-input" type="text" placeholder="Alamat domisili lengkap" value={form.alamat} onChange={set("alamat")} required />
+              <input className={`reg-input${fieldErrors.alamat ? " reg-input--error" : ""}`} type="text" placeholder="Alamat domisili lengkap" value={form.alamat} onChange={set("alamat")} />
+              {fieldErrors.alamat && <span className="reg-field-error">{fieldErrors.alamat}</span>}
             </div>
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Kota / Cabang<em>*</em></label>
               <div className="reg-select-wrap">
-                <select className="reg-select" value={form.kota} onChange={set("kota")} required>
+                <select className={`reg-select${fieldErrors.kota ? " reg-input--error" : ""}`} value={form.kota} onChange={set("kota")}>
                   <option value="">{loadingData ? "Memuat cabang..." : "Pilih kota / cabang"}</option>
                   {displayKota.map((k) => <option key={k.value} value={k.value}>{k.label}</option>)}
                 </select>
                 <ChevronDown size={16} className="reg-select-icon" />
               </div>
+              {fieldErrors.kota && <span className="reg-field-error">{fieldErrors.kota}</span>}
             </div>
           </div>
         </div>
@@ -385,6 +427,7 @@ export default function RegisterPage() {
         {/* 02 Unit */}
         <div className="reg-section">
           <SectionHeader num="02" title={<>Unit yang akan Disewa<em>*</em></>} desc="Pilih satu atau lebih unit kendaraan yang ingin Anda sewa." />
+          {fieldErrors.units && <span className="reg-field-error reg-field-error--section">{fieldErrors.units}</span>}
           {loadingData ? (
             <div className="reg-loading-row"><Loader2 size={16} className="reg-spin" /> Memuat daftar unit...</div>
           ) : (
@@ -424,21 +467,24 @@ export default function RegisterPage() {
           <div className="reg-fields">
             <div className="reg-field reg-field--full">
               <label className="reg-field-label">Nama Penjamin<em>*</em></label>
-              <input className="reg-input" type="text" placeholder="Nama lengkap penjamin" value={form.namaPenjamin} onChange={set("namaPenjamin")} required />
+              <input className={`reg-input${fieldErrors.namaPenjamin ? " reg-input--error" : ""}`} type="text" placeholder="Nama lengkap penjamin" value={form.namaPenjamin} onChange={set("namaPenjamin")} />
+              {fieldErrors.namaPenjamin && <span className="reg-field-error">{fieldErrors.namaPenjamin}</span>}
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Hubungan dengan Penjamin<em>*</em></label>
               <div className="reg-select-wrap">
-                <select className="reg-select" value={form.hubunganPenjamin} onChange={set("hubunganPenjamin")} required>
+                <select className={`reg-select${fieldErrors.hubunganPenjamin ? " reg-input--error" : ""}`} value={form.hubunganPenjamin} onChange={set("hubunganPenjamin")}>
                   <option value="">Pilih hubungan</option>
                   {HUBUNGAN.map((h) => <option key={h} value={h}>{h}</option>)}
                 </select>
                 <ChevronDown size={16} className="reg-select-icon" />
               </div>
+              {fieldErrors.hubunganPenjamin && <span className="reg-field-error">{fieldErrors.hubunganPenjamin}</span>}
             </div>
             <div className="reg-field">
               <label className="reg-field-label">Nomor Telepon Penjamin<em>*</em></label>
-              <input className="reg-input" type="tel" placeholder="628xxxxxxxxx" value={form.teleponPenjamin} onChange={set("teleponPenjamin")} required />
+              <input className={`reg-input${fieldErrors.teleponPenjamin ? " reg-input--error" : ""}`} type="tel" placeholder="628xxxxxxxxx" value={form.teleponPenjamin} onChange={set("teleponPenjamin")} />
+              {fieldErrors.teleponPenjamin && <span className="reg-field-error">{fieldErrors.teleponPenjamin}</span>}
             </div>
           </div>
         </div>
@@ -453,6 +499,7 @@ export default function RegisterPage() {
                 onChange={() => toggleList("apps", a.id)} />
             ))}
           </div>
+          {fieldErrors.apps && <span className="reg-field-error reg-field-error--section">{fieldErrors.apps}</span>}
         </div>
 
         {/* 05 Referral */}
@@ -475,6 +522,7 @@ export default function RegisterPage() {
               <FileUploadBox
                 key={f.key} label={f.label} required={f.required} hint={f.hint}
                 file={files[f.key] ?? null} onChange={setFile(f.key)}
+                error={fieldErrors[`file_${f.key}`]}
               />
             ))}
           </div>
